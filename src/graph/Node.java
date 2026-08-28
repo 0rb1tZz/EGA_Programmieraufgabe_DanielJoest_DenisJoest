@@ -1,11 +1,20 @@
 package graph;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Node {
 
     private int id;
 
     private int x;
     private int y;
+
+    private boolean visitedInCurrentSearch;
+
+    private final List<Edge> outgoingEdges = new LinkedList<Edge>();
+
 
     public Node(int id, int x, int y){
         this.id = id;
@@ -35,6 +44,26 @@ public class Node {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public List<Edge> getOutgoingEdges() {
+        return outgoingEdges;
+    }
+
+    public void addOutgoingEdge(Edge edge){
+        outgoingEdges.add(edge);
+    }
+
+    public boolean isVisitedInCurrentSearch() {
+        return visitedInCurrentSearch;
+    }
+
+    public void setVisitedInCurrentSearch(boolean visitedInCurrentSearch) {
+        this.visitedInCurrentSearch = visitedInCurrentSearch;
+    }
+
+    public Node copy(){
+        return new Node(this.id, this.x, this.y);
     }
 
     @Override

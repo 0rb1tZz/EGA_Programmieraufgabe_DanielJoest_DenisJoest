@@ -1,6 +1,7 @@
 package graph;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 public class Graph {
 
@@ -19,8 +20,9 @@ public class Graph {
      * Adds this edge to the graph and constructs the reverse edge and also adds it.
      * @param edge the edge to add
      */
-    public void addEdge(Edge edge) {
-        Edge reverseEdge = new Edge(edge.getTargetNode(), edge.getSourceNode(), edge.getCapacity());
+    public void addEdge(Edge edge, int maxCapacity) { // evtl. random capacity statt identische für reverse Edge
+        var reverseEdgeCapacity = new Random().nextInt(maxCapacity);
+        Edge reverseEdge = new Edge(edge.getTargetNode(), edge.getSourceNode(), reverseEdgeCapacity);
         edge.setReverseEdge(reverseEdge);
         reverseEdge.setReverseEdge(edge);
         edges.add(edge);

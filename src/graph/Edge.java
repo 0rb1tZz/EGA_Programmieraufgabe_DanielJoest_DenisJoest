@@ -6,11 +6,14 @@ public class Edge {
     private Node targetNode;
     private int capacity;
 
+    private int flow;
+
     private Edge reverseEdge;
 
 
     public Edge(Node n1, Node n2, int capacity){
         sourceNode = n1;
+        sourceNode.addOutgoingEdge(this);
         targetNode = n2;
         this.capacity = capacity;
     }
@@ -45,6 +48,25 @@ public class Edge {
 
     public void setReverseEdge(Edge reverseEdge) {
         this.reverseEdge = reverseEdge;
+    }
+
+    public int getFlow() {
+        return flow;
+    }
+
+    public void setFlow(int flow) {
+        this.flow = flow;
+    }
+
+    public void  addFlow(int flow){
+        if (this.flow + flow > capacity){
+            throw new IllegalArgumentException("The added flow can't exceed the remaining capacity.");
+        }
+        this.flow += flow;
+    } // reverseEdge.addFlow(-flow); an der jeweiligen Stelle des Aufrufs
+
+    public int getRemainingCapacity(){
+        return capacity - flow;
     }
 
     @Override
