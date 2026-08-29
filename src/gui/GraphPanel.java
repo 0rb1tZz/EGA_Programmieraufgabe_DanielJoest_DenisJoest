@@ -1,5 +1,6 @@
 package gui;
 
+import algo.FordFulkerson;
 import graph.Edge;
 import graph.Graph;
 import graph.GraphBuilder;
@@ -10,7 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 
 public class GraphPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
     private Graph graph;
@@ -34,13 +34,13 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
 
     public GraphPanel(Graph graph) {
         this.graph = graph;
-        setBackground(Color.DARK_GRAY);
+        setBackground(Color.GRAY);
         initListeners();
         // setupMouse();
     }
 
     public GraphPanel() {
-        setBackground(Color.DARK_GRAY);
+        setBackground(Color.GRAY);
         initListeners();
         // setupMouse();
     }
@@ -94,18 +94,20 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Draw Edges first so they sit behind the nodes
-        g2d.setColor(Color.GRAY);
         g2d.setStroke(new BasicStroke(2));
         for (Edge edge : graph.getEdges()) {
-            g2d.drawLine(edge.getSourceNode().getX(), edge.getSourceNode().getY(), edge.getTargetNode().getX(), edge.getTargetNode().getY());
-
-            // Draw edge capacities
             g2d.setColor(Color.WHITE);
+            g2d.drawLine(edge.getSourceNode().getX(), edge.getSourceNode().getY(), edge.getTargetNode().getX(), edge.getTargetNode().getY());
+        }
+
+        for (Edge edge : graph.getEdges()) {
+            // Draw edge capacities
+            g2d.setColor(Color.BLACK);
             g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
             FontMetrics fm = g2d.getFontMetrics();
-            int textX = (int) edgeCenter(edge)[0] - (fm.stringWidth(String.valueOf(edge.getCapacity())) / 2);
-            int textY = (int) (edgeCenter(edge)[1] + (fm.getAscent() / 2) - 2);
-            g2d.drawString(String.valueOf(edge.getCapacity()), textX, textY);
+            int textX = (int) edgeLabelPosition(edge)[0]; // - (fm.stringWidth(String.valueOf(edge.getCapacity())) / 2);
+            int textY = (int) (edgeLabelPosition(edge)[1]); // + (fm.getAscent() / 2f));
+            g2d.drawString(String.valueOf(edge.getFlow() + " / " + edge.getCapacity()), textX, textY);
         }
 
         // Draw Nodes
@@ -128,13 +130,27 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
         }
     }
 
-    private double[] edgeCenter(Edge edge){
-        int x = edge.getSourceNode().getX() + (edge.getTargetNode().getX() - edge.getSourceNode().getX())/2;
-        int y = edge.getSourceNode().getY() + (edge.getTargetNode().getY() - edge.getSourceNode().getY())/2;
-        double reversSlope = (edge.getTargetNode().getX() - edge.getSourceNode().getX())/(double)(edge.getTargetNode().getY() - edge.getSourceNode().getY()) * -1;
-        double reversSlopeNomrmalized = reversSlope / Math.sqrt(1 + Math.pow(reversSlope, 2));
-        double sign = Math.signum(reversSlopeNomrmalized);
-        return new double[]{x + 3 * sign, y + 3 * reversSlopeNomrmalized};
+    private double[] edgeLabelPosition(Edge edge){
+        int x = edge.getSourceNode().getX() + (edge.getTargetNode().getX() - edge.getSourceNode().getX())/4;
+        int y = edge.getSourceNode().getY() + (edge.getTargetNode().getY() - edge.getSourceNode().getY())/4;
+        float[] reverseSlope = new float[2];
+        reverseSlope[0] = edge.getTargetNode().getY() - edge.getSourceNode().getY();
+        reverseSlope[1] = edge.getTargetNode().getX() - edge.getSourceNode().getX();
+        double lengthRevSlope = Math.sqrt(reverseSlope[0]*reverseSlope[0] + reverseSlope[1]*reverseSlope[1]);
+        reverseSlope[0] /= lengthRevSlope/10;
+        reverseSlope[1] /= lengthRevSlope/10;
+
+//
+//        double reversSlope;
+//        if (edge.getSourceNode().getY() != edge.getTargetNode().getY()) {
+//            reversSlope = (edge.getTargetNode().getX() - edge.getSourceNode().getX())/(double)(edge.getTargetNode().getY() - edge.getSourceNode().getY()) * -1;
+//        } else {
+//            reversSlope = 100;
+//        }
+//        double reverseSlopeNormalized = reversSlope / Math.sqrt(1 + Math.pow(reversSlope, 2));
+//        double sign = Math.signum(reverseSlopeNormalized);
+        // return new double[]{x + reverseSlope[0], y + reverseSlope[1]};
+        return new double[]{x, y};
     }
 
     private void setupMouse() {
@@ -180,6 +196,8 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     @Override
     public void mouseClicked(MouseEvent e) {
 
+        FordFulkerson falk = new FordFulkerson(this.graph);
+        System.out.println(falk.runAlgorithm());
     }
 
     @Override

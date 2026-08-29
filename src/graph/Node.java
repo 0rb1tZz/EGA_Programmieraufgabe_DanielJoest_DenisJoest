@@ -12,6 +12,7 @@ public class Node {
     private int y;
 
     private boolean visitedInCurrentSearch;
+    private Edge cameFromInCurentSearch;
 
     private final List<Edge> outgoingEdges = new LinkedList<Edge>();
 

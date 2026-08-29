@@ -25,24 +25,24 @@ public class FordFulkerson extends BaseAlgorithm {
         Node targetNode = residualGraph.getTargetNode();
 
         nodePath.add(sourceNode);
-        while (nodePath.getLast() != targetNode) {
+        while (nodePath.peekLast() != targetNode) {
             if(nodePath.isEmpty())
                 return null;
             Node currentNode = nodePath.getLast();
-            boolean hasUnvisitedChildren = true;
+            boolean hasOnlyVisitedChildren = true;
             for (Edge edge : currentNode.getOutgoingEdges()) {
-                if(!edge.getTargetNode().isVisitedInCurrentSearch()){
+                if(!edge.getTargetNode().isVisitedInCurrentSearch() && edge.getRemainingCapacity() > 0){
                     nodePath.add(edge.getTargetNode());
                     edge.getTargetNode().setVisitedInCurrentSearch(true);
                     edgePath.add(edge);
+                    hasOnlyVisitedChildren = false;
                     break;
-                }else {
-                    hasUnvisitedChildren = false;
                 }
             }
-            if (!hasUnvisitedChildren) {
+            if (hasOnlyVisitedChildren) {
                 nodePath.removeLast();
-                edgePath.removeLast();
+                if(!edgePath.isEmpty())
+                    edgePath.removeLast();
             }
         }
         

@@ -37,6 +37,8 @@ public class GraphBuilder {
         for (int i = 0; i < nodeCount; i++) {
             graph.addNode(new Node(i, random.nextInt(maxX), random.nextInt(maxY)));
         }
+        graph.setSourceNode(graph.getNodes().getFirst());
+        graph.setTargetNode(graph.getNodes().getLast());
     }
 
     /**
