@@ -12,7 +12,7 @@ public class Node {
     private int y;
 
     private boolean visitedInCurrentSearch;
-    private Edge cameFromInCurentSearch;
+    private Edge cameFromInCurrentSearch;
 
     private final List<Edge> outgoingEdges = new LinkedList<Edge>();
 
@@ -61,6 +61,14 @@ public class Node {
 
     public void setVisitedInCurrentSearch(boolean visitedInCurrentSearch) {
         this.visitedInCurrentSearch = visitedInCurrentSearch;
+    }
+
+    public void setCameFromInCurrentSearch(Edge e){
+        cameFromInCurrentSearch = e;
+    }
+
+    public Edge getCameFromInCurrentSearch(){
+        return cameFromInCurrentSearch;
     }
 
     public Node copy(){

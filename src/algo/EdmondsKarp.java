@@ -9,7 +9,7 @@ import java.util.Queue;
 
 public class EdmondsKarp extends BaseAlgorithm {
 
-    EdmondsKarp(Graph graph) {
+    public EdmondsKarp(Graph graph) {
         super(graph);
     }
 
@@ -19,37 +19,42 @@ public class EdmondsKarp extends BaseAlgorithm {
      */
     @Override
     public LinkedList<Edge> getPathToSink() {
-        Queue<Node> toLookAt;
+        Queue<Node> toLookAt = new LinkedList<>();
         LinkedList<Edge> edgePath = new LinkedList<>();
         LinkedList<Node> nodePath = new LinkedList<>();
         Node sourceNode = residualGraph.getSourceNode();
         Node targetNode = residualGraph.getTargetNode();
 
         toLookAt.add(sourceNode);
+        sourceNode.setVisitedInCurrentSearch(true);
         while (!toLookAt.isEmpty()) {
-            if()
-        }
-        while (nodePath.peekLast() != targetNode) {
-            if(nodePath.isEmpty())
-                return null;
-            Node currentNode = nodePath.getLast();
-            boolean hasOnlyVisitedChildren = true;
-            for (Edge edge : currentNode.getOutgoingEdges()) {
-                if(!edge.getTargetNode().isVisitedInCurrentSearch() && edge.getRemainingCapacity() > 0){
-                    nodePath.add(edge.getTargetNode());
-                    edge.getTargetNode().setVisitedInCurrentSearch(true);
-                    edgePath.add(edge);
-                    hasOnlyVisitedChildren = false;
-                    break;
-                }
+            Node current = toLookAt.poll();
+            if(current == targetNode){
+                return reconstructPath();
             }
-            if (hasOnlyVisitedChildren) {
-                nodePath.removeLast();
-                if(!edgePath.isEmpty())
-                    edgePath.removeLast();
+            for (Edge e : current.getOutgoingEdges()){
+                if(!e.getTargetNode().isVisitedInCurrentSearch() && e.getRemainingCapacity() > 0){
+                    Node target = e.getTargetNode();
+                    toLookAt.add(target);
+                    target.setVisitedInCurrentSearch(true);
+                    target.setCameFromInCurrentSearch(e);
+                }
             }
         }
 
-        return edgePath;
+        return null;
+    }
+
+    private LinkedList<Edge> reconstructPath(){
+        LinkedList<Edge> path = new LinkedList<>();
+        Node source = residualGraph.getSourceNode();
+        Node current = residualGraph.getTargetNode();
+
+        while (source != current){
+            path.addFirst(current.getCameFromInCurrentSearch());
+            current = current.getCameFromInCurrentSearch().getSourceNode();
+        }
+
+        return path;
     }
 }

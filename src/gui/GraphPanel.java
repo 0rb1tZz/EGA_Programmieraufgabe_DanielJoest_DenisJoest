@@ -1,5 +1,6 @@
 package gui;
 
+import algo.EdmondsKarp;
 import algo.FordFulkerson;
 import graph.Edge;
 import graph.Graph;
@@ -196,7 +197,7 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        FordFulkerson falk = new FordFulkerson(this.graph);
+        EdmondsKarp falk = new EdmondsKarp(this.graph);
         System.out.println(falk.runAlgorithm());
     }
 
