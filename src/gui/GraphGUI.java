@@ -1,7 +1,12 @@
 package gui;
 
+import algo.*;
+import graph.Graph;
+import graph.GraphBuilder;
+
 import javax.swing.*;
 import java.awt.*;
+import java.util.Random;
 
 public class GraphGUI extends JFrame {
 
@@ -20,6 +25,8 @@ public class GraphGUI extends JFrame {
 
     private final GraphPanel graphPanel = new GraphPanel();
     private final JComboBox<AlgoType> algoSelectionBox = new JComboBox<>(AlgoType.values());
+
+
     private final JButton newGraphButton = new JButton("New Graph");
     private final JButton startButton = new JButton("Start");
     private final JButton stopButton = new JButton("Stop");
@@ -30,6 +37,9 @@ public class GraphGUI extends JFrame {
 
     private final JLabel statusLabel = new JLabel(" ");
     private final JLabel flowLabel = new JLabel(" ");
+
+    private Graph currentGraph;
+    private BaseAlgorithm algorithm;
 
 
 
@@ -43,9 +53,12 @@ public class GraphGUI extends JFrame {
         add(buildStatusBar(), BorderLayout.SOUTH);
 
         var graphPanel = new GraphPanel();
+        graphPanel.setGraphGUI(this);
         var scrollPane = new JScrollPane(graphPanel);
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(new GraphGenerationPanel(graphPanel), BorderLayout.EAST);
+
+        addListeners();
 
         SwingUtilities.invokeLater(() -> {this.validate(); this.repaint(); this.setVisible(true);});
     }
@@ -91,19 +104,50 @@ public class GraphGUI extends JFrame {
 
 
     private void generateNewGraph() {
-        // gen a new graph
+        stopAlgorithm();
+        Graph graph = new Graph(); // properties
+
+        if (graph == null) {
+            JOptionPane.showMessageDialog(this, "Please select a Graph", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+//        try {
+//            int nodeCount = Integer.parseInt(nodeCountField.getText());
+//            int capacity = Integer.parseInt(maxCapacityField.getText());
+//            int seed = seedField.getText().isEmpty() ? new Random().nextInt() : Integer.parseInt(seedField.getText());
+//            graphPanel.setGraph(new GraphBuilder(nodeCount, capacity, seed));
+//        } catch (NumberFormatException ex) {
+//            JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+//        }
+
+        currentGraph = graph;
+        //graphPanel.setGraph(graph);
+        statusLabel.setText("Graph Created with " + graph.getNodes().size() + " Nodes.");
+        flowLabel.setText(" ");
+        toggleMenuControls(false);
     }
 
     private void startAlgorithm() {
-
+        algorithm = createAlgorithm((AlgoType) algoSelectionBox.getSelectedItem());
+        try {
+            algorithm.runAlgorithm();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void stopAlgorithm() {
 
     }
 
-    private void createAlgorithm() {
-
+    private BaseAlgorithm createAlgorithm(AlgoType algoType) {
+        return switch (algoType) {
+            case FORD_FULKERSON -> new FordFulkerson(currentGraph);
+            case EDMONDS_KARP -> new EdmondsKarp(currentGraph);
+            case DINIC -> new Dinic(currentGraph);
+            case GOLDBERG_TARJAN -> new GoldbergTarjan(currentGraph);
+        };
     }
 
     private void toggleMenuControls(boolean running) {
@@ -113,5 +157,17 @@ public class GraphGUI extends JFrame {
         autoButton.setEnabled(running);
         speedSlider.setEnabled(running);
         stopButton.setEnabled(running);
+    }
+
+    private void addListeners() {
+        newGraphButton.addActionListener(e -> {generateNewGraph();});
+        startButton.addActionListener(e -> {startAlgorithm();});
+        stopButton.addActionListener(e -> {stopAlgorithm();});
+        stepButton.addActionListener(e -> {algorithm.setTakeStep(stepButton.isSelected()); algorithm.setAutoRun(false);});
+        autoButton.addActionListener(e -> {algorithm.setAutoRun(autoButton.isSelected());});
+    }
+
+    public void setGraph(Graph graph){
+        this.currentGraph = graph;
     }
 }

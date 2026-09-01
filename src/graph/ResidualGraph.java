@@ -50,6 +50,7 @@ public class ResidualGraph {
         for(Edge edge : targetNode.getOutgoingEdges()){
             flow += edge.getReverseEdge().getFlow();
         }
+        System.out.println(flow);
         return flow;
     }
 

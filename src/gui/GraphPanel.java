@@ -33,6 +33,8 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     private int yDiff;
     private Point startPoint;
 
+    private GraphGUI graphGUI;
+
     public GraphPanel(Graph graph) {
         this.graph = graph;
         setBackground(Color.GRAY);
@@ -110,6 +112,8 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             int textY = (int) (edgeLabelPosition(edge)[1]); // + (fm.getAscent() / 2f));
             g2d.drawString(String.valueOf(edge.getFlow() + " / " + edge.getCapacity()), textX, textY);
         }
+
+        for (Edge edge : graph.g) {}
 
         // Draw Nodes
         for (Node node : graph.getNodes()) {
@@ -191,18 +195,19 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
 
     public void setGraph(GraphBuilder graphBuilder) {
         this.graph = graphBuilder.buildGraph(this.getWidth(), this.getHeight());
+        graphGUI.setGraph(this.graph);
         this.repaint();
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
 
-        EdmondsKarp falk = new EdmondsKarp(this.graph);
-        try {
-            System.out.println(falk.runAlgorithm());
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
+//        EdmondsKarp falk = new EdmondsKarp(this.graph);
+//        try {
+//            System.out.println(falk.runAlgorithm());
+//        } catch (InterruptedException ex) {
+//            throw new RuntimeException(ex);
+//        }
     }
 
     @Override
@@ -262,5 +267,9 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             fontSize = (int) (BASE_FONT_SIZE / zoomFactor);
             repaint();
         }
+    }
+
+    public void setGraphGUI(GraphGUI graphGUI) {
+        this.graphGUI = graphGUI;
     }
 }
