@@ -1,6 +1,7 @@
 package graph;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -11,31 +12,31 @@ public class ResidualGraph {
 
     private LinkedList<Node> nodes = new LinkedList<Node>();
     private LinkedList<Edge> edges = new LinkedList<Edge>();
-    private Map<Node, Node> oldAndNewNodes = new HashMap<Node, Node>();
+    private final Map<Node, Node> oldAndNewNodes = new HashMap<Node, Node>();
+    private final Map<Edge, Edge> oldAndNewEdges = new LinkedHashMap<Edge, Edge>();
 
 
     public ResidualGraph(Graph graph) {
-        int sourceNodeID = graph.getSourceNode().getId();
-        int targetNodeID = graph.getTargetNode().getId();
         for(Node node : graph.getNodes()) {
             Node newNode = node.copy();
             nodes.add(newNode);
             oldAndNewNodes.put(node, newNode);
-            if(newNode.getId() == sourceNodeID) {
-                sourceNode = newNode;
-            }else if(newNode.getId() == targetNodeID) {
-                targetNode = newNode;
-            }
         }
+        sourceNode = oldAndNewNodes.get(graph.getSourceNode());
+        targetNode = oldAndNewNodes.get(graph.getTargetNode());
+
         for(int i = 0; i < graph.getEdges().size(); i = i + 2) {
-            Edge edge = copy(graph.getEdges().get(i));
-            Edge revEdge = copy(graph.getEdges().get(i).getReverseEdge());
+            Edge oldEdge = graph.getEdges().get(i);
+            Edge edge = copy(oldEdge);
+            Edge revEdge = copy(oldEdge.getReverseEdge());
 
             edges.add(edge);
             edges.add(revEdge);
 
             edge.setReverseEdge(revEdge);
             revEdge.setReverseEdge(edge);
+            oldAndNewEdges.put(oldEdge, edge);
+            oldAndNewEdges.put(oldEdge.getReverseEdge(), revEdge);
         }
     }
 
