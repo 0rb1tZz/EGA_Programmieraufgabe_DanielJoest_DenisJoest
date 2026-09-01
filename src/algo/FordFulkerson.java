@@ -25,6 +25,7 @@ public class FordFulkerson extends BaseAlgorithm {
         Node targetNode = residualGraph.getTargetNode();
 
         nodePath.add(sourceNode);
+        sourceNode.setVisitedInCurrentSearch(true);
         while (nodePath.peekLast() != targetNode) {
             if(nodePath.isEmpty())
                 return null;
@@ -45,7 +46,7 @@ public class FordFulkerson extends BaseAlgorithm {
                     edgePath.removeLast();
             }
         }
-        
+
         return edgePath;
     }
 }

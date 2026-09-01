@@ -70,6 +70,7 @@ public class GraphBuilder {
                 var edge2 = edges.get(j);
                 if (intersects(edge1, edge2)) {
                     edges.remove(j);
+                    edge2.getSourceNode().getOutgoingEdges().remove(edge2);
                     j--;
                 }
             }

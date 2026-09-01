@@ -49,6 +49,7 @@ public abstract class BaseAlgorithm {
             }
             for(Node n: residualGraph.getNodes())
                 n.setVisitedInCurrentSearch(false);
+            // TODO: insert repaint method of graphPanel here
         }
         return residualGraph.getMaxFlow();
     }
