@@ -19,7 +19,7 @@ public abstract class BaseAlgorithm {
     protected ResidualGraph residualGraph;
     protected boolean noMoreAugmentingPath = false;
     private boolean takeStep = true;
-    private boolean autoRun = false;
+    private boolean autoRun = true; //false;
 
     public BaseAlgorithm(Graph graph) {
         residualGraph = new ResidualGraph(graph);
@@ -27,6 +27,7 @@ public abstract class BaseAlgorithm {
 
     public int runAlgorithm() throws InterruptedException {
         while(!noMoreAugmentingPath){
+            System.out.println("Iter");
             Thread.sleep(400);
             while(!takeStep && !autoRun){
                 Thread.sleep(400);
