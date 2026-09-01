@@ -198,7 +198,11 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     public void mouseClicked(MouseEvent e) {
 
         EdmondsKarp falk = new EdmondsKarp(this.graph);
-        System.out.println(falk.runAlgorithm());
+        try {
+            System.out.println(falk.runAlgorithm());
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     @Override

@@ -18,13 +18,21 @@ public abstract class BaseAlgorithm {
 
     protected ResidualGraph residualGraph;
     protected boolean noMoreAugmentingPath = false;
+    private boolean takeStep = true;
+    private boolean autoRun = false;
 
     public BaseAlgorithm(Graph graph) {
         residualGraph = new ResidualGraph(graph);
     }
 
-    public int runAlgorithm(){
+    public int runAlgorithm() throws InterruptedException {
         while(!noMoreAugmentingPath){
+            Thread.sleep(400);
+            while(!takeStep && !autoRun){
+                Thread.sleep(400);
+            }
+            takeStep = false;
+
             LinkedList<Edge> path = getPathToSink();
             if(path == null)
                 return residualGraph.getMaxFlow();
@@ -54,4 +62,11 @@ public abstract class BaseAlgorithm {
         return bottleneck;
     }
 
+    public void setTakeStep(boolean takeStep){
+        this.takeStep = takeStep;
+    }
+
+    public void setAutoRun(boolean autoRun) {
+        this.autoRun = autoRun;
+    }
 }
