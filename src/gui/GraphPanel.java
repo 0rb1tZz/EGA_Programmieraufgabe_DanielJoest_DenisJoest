@@ -113,7 +113,17 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             g2d.drawString(String.valueOf(edge.getFlow() + " / " + edge.getCapacity()), textX, textY);
         }
 
-        for (Edge edge : graph.g) {}
+        if (graphGUI.getCurrentAugmentingPath() != null) {
+            for (Edge edge : graphGUI.getCurrentAugmentingPath()) {
+                g2d.setColor(Color.ORANGE);
+                g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
+                FontMetrics fm = g2d.getFontMetrics();
+                int textX = (int) edgeLabelPosition(edge)[0]; // - (fm.stringWidth(String.valueOf(edge.getCapacity())) / 2);
+                int textY = (int) (edgeLabelPosition(edge)[1]); // + (fm.getAscent() / 2f));
+                g2d.drawString(String.valueOf(edge.getFlow() + " / " + edge.getCapacity()), textX, textY);
+            }
+        }
+
 
         // Draw Nodes
         for (Node node : graph.getNodes()) {

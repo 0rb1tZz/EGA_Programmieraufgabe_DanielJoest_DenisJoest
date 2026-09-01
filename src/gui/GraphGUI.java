@@ -1,11 +1,13 @@
 package gui;
 
 import algo.*;
+import graph.Edge;
 import graph.Graph;
 import graph.GraphBuilder;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 import java.util.Random;
 
 public class GraphGUI extends JFrame {
@@ -170,4 +172,12 @@ public class GraphGUI extends JFrame {
     public void setGraph(Graph graph){
         this.currentGraph = graph;
     }
+
+    public List<Edge> getCurrentAugmentingPath() {
+        if (algorithm == null) {
+            return null;
+        }
+        return algorithm.getCurrentAugmentingPath();
+    }
+
 }

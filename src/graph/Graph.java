@@ -60,4 +60,14 @@ public class Graph {
     public void setEdges(LinkedList<Edge> edges) {
         this.edges = edges;
     }
+
+    // to be run after the algo terminated to get the final max flow value
+    public int getMaxFlow(){
+        int flow = 0;
+        for(Edge edge : targetNode.getOutgoingEdges()){
+            flow += edge.getReverseEdge().getFlow();
+        }
+        System.out.println(flow);
+        return flow;
+    }
 }

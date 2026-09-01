@@ -16,13 +16,16 @@ public abstract class BaseAlgorithm {
     //Schritt 4: flow entlang des Pfades anpassen
     //von Schritt 2 weitermachen
 
-    protected ResidualGraph residualGraph;
+
+    // protected ResidualGraph residualGraph;
+    protected Graph residualGraph;
+    protected LinkedList<Edge> currentAugmentingPath = new LinkedList<Edge>();
     protected boolean noMoreAugmentingPath = false;
     private boolean takeStep = true;
     private boolean autoRun = true; //false;
 
     public BaseAlgorithm(Graph graph) {
-        residualGraph = new ResidualGraph(graph);
+        residualGraph = graph; // residualGraph = new ResidualGraph(graph);
     }
 
     public int runAlgorithm() throws InterruptedException {
@@ -34,12 +37,13 @@ public abstract class BaseAlgorithm {
             }
             takeStep = false;
 
-            LinkedList<Edge> path = getPathToSink();
-            if(path == null)
+            //LinkedList<Edge> path = getPathToSink(); // und alle "currentAugmentingPath" ersetzen
+            currentAugmentingPath = getPathToSink();
+            if(currentAugmentingPath == null)
                 return residualGraph.getMaxFlow();
 
-            int bottleneck = bottleneckOfPath(path);
-            for(Edge e: path){
+            int bottleneck = bottleneckOfPath(currentAugmentingPath);
+            for(Edge e: currentAugmentingPath){
                 e.addFlow(bottleneck);
                 e.getReverseEdge().addFlow(-bottleneck);
             }
@@ -69,5 +73,9 @@ public abstract class BaseAlgorithm {
 
     public void setAutoRun(boolean autoRun) {
         this.autoRun = autoRun;
+    }
+
+    public List<Edge> getCurrentAugmentingPath() {
+        return currentAugmentingPath;
     }
 }
