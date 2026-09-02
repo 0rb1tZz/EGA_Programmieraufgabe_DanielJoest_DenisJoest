@@ -36,6 +36,7 @@ public class GraphGUI extends JFrame {
     private final JToggleButton autoButton = new JToggleButton("Auto Run");
     private final JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
     private final JCheckBox edgeLabelToggle = new JCheckBox("Show Edge Labels", false);
+    private final JCheckBox nodeLabelToggle = new JCheckBox("Show Node Labels", false);
 
     private final JLabel statusLabel = new JLabel(" ");
     private final JLabel flowLabel = new JLabel(" ");
@@ -54,7 +55,6 @@ public class GraphGUI extends JFrame {
         add(buildMenuBar(), BorderLayout.NORTH);
         add(buildStatusBar(), BorderLayout.SOUTH);
 
-        var graphPanel = new GraphPanel();
         graphPanel.setGraphGUI(this);
         var scrollPane = new JScrollPane(graphPanel);
         this.add(scrollPane, BorderLayout.CENTER);
@@ -85,6 +85,7 @@ public class GraphGUI extends JFrame {
         speedSlider.setPreferredSize(new Dimension(150, 20));
         menuBar.add(speedSlider);
         menuBar.add(edgeLabelToggle);
+        menuBar.add(nodeLabelToggle);
         return menuBar;
     }
 
@@ -132,6 +133,7 @@ public class GraphGUI extends JFrame {
 
     private void startAlgorithm() {
         algorithm = createAlgorithm((AlgoType) algoSelectionBox.getSelectedItem());
+        algorithm.setGraphPanel(graphPanel);
         try {
             algorithm.runAlgorithm();
         } catch (InterruptedException e) {
@@ -167,6 +169,9 @@ public class GraphGUI extends JFrame {
         stopButton.addActionListener(e -> {stopAlgorithm();});
         stepButton.addActionListener(e -> {algorithm.setTakeStep(stepButton.isSelected()); algorithm.setAutoRun(false);});
         autoButton.addActionListener(e -> {algorithm.setAutoRun(autoButton.isSelected());});
+
+        edgeLabelToggle.addActionListener(e -> {graphPanel.setShowEdgeLabels(edgeLabelToggle.isSelected());});
+        nodeLabelToggle.addActionListener(e -> {graphPanel.setNodeEdgeLabels(nodeLabelToggle.isSelected());});
     }
 
     public void setGraph(Graph graph){

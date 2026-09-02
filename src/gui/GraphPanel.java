@@ -19,6 +19,8 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     private double nodeRadius = 20;
     private static final int BASE_FONT_SIZE = 12;
     private int fontSize = 12;
+    private boolean showEdgeLabels = false;
+    private boolean showNodeLabels = false;
 
     //private final BufferedImage image;
 
@@ -58,6 +60,7 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         if (graph == null) return;
         Graphics2D g2d = (Graphics2D) g;
 
@@ -103,19 +106,18 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             g2d.drawLine(edge.getSourceNode().getX(), edge.getSourceNode().getY(), edge.getTargetNode().getX(), edge.getTargetNode().getY());
         }
 
-        for (Edge edge : graph.getEdges()) {
-            // Draw edge capacities
-            g2d.setColor(Color.BLACK);
-            g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
-            FontMetrics fm = g2d.getFontMetrics();
-            int textX = (int) edgeLabelPosition(edge)[0]; // - (fm.stringWidth(String.valueOf(edge.getCapacity())) / 2);
-            int textY = (int) (edgeLabelPosition(edge)[1]); // + (fm.getAscent() / 2f));
-            g2d.drawString(String.valueOf(edge.getFlow() + " / " + edge.getCapacity()), textX, textY);
-        }
-
-        if (graphGUI.getCurrentAugmentingPath() != null) {
+        // Re-Draw edges in orange that are part of the current augmenting path
+        if (graphGUI.getCurrentAugmentingPath() != null){
             for (Edge edge : graphGUI.getCurrentAugmentingPath()) {
                 g2d.setColor(Color.ORANGE);
+                g2d.drawLine(edge.getSourceNode().getX(), edge.getSourceNode().getY(), edge.getTargetNode().getX(), edge.getTargetNode().getY());
+            }
+        }
+
+        if (showEdgeLabels) {
+            for (Edge edge : graph.getEdges()) {
+                // Draw edge capacities
+                g2d.setColor(Color.BLACK);
                 g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
                 FontMetrics fm = g2d.getFontMetrics();
                 int textX = (int) edgeLabelPosition(edge)[0]; // - (fm.stringWidth(String.valueOf(edge.getCapacity())) / 2);
@@ -124,8 +126,8 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             }
         }
 
-
         // Draw Nodes
+
         for (Node node : graph.getNodes()) {
             // Draw node circle
             g2d.setColor(new Color(70, 130, 180)); // Steel Blue
@@ -135,14 +137,18 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             g2d.setColor(Color.DARK_GRAY);
             g2d.drawOval(node.getX() - (int) nodeRadius, node.getY() - (int) nodeRadius, 2 * (int) nodeRadius, 2 * (int) nodeRadius);
 
-            // Draw node id centered
-            g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
-            FontMetrics fm = g2d.getFontMetrics();
-            int textX = node.getX() - (fm.stringWidth(String.valueOf(node.getId())) / 2);
-            int textY = node.getY() + (fm.getAscent() / 2) - 2;
-            g2d.drawString(String.valueOf(node.getId()), textX, textY);
+            if (showNodeLabels) {
+                // Draw node id centered
+                g2d.setColor(Color.WHITE);
+                g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
+                FontMetrics fm = g2d.getFontMetrics();
+                int textX = node.getX() - (fm.stringWidth(String.valueOf(node.getId())) / 2);
+                int textY = node.getY() + (fm.getAscent() / 2) - 2;
+                g2d.drawString(String.valueOf(node.getId()), textX, textY);
+            }
         }
+
+
     }
 
     private double[] edgeLabelPosition(Edge edge){
@@ -206,6 +212,18 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     public void setGraph(GraphBuilder graphBuilder) {
         this.graph = graphBuilder.buildGraph(this.getWidth(), this.getHeight());
         graphGUI.setGraph(this.graph);
+        this.repaint();
+    }
+
+    public void setShowEdgeLabels(boolean showEdgeLabels) {
+        this.showEdgeLabels = showEdgeLabels;
+        System.out.println("showEdgeLabels: " + showEdgeLabels);
+        this.repaint();
+    }
+
+    public void setNodeEdgeLabels(boolean showNodeLabels) {
+        this.showNodeLabels = showNodeLabels;
+        System.out.println("showNodeLabels: " + showNodeLabels);
         this.repaint();
     }
 
@@ -281,5 +299,9 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
 
     public void setGraphGUI(GraphGUI graphGUI) {
         this.graphGUI = graphGUI;
+    }
+
+    public void repaintGraphPanel(){
+        this.repaint();
     }
 }
