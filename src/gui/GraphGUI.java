@@ -134,11 +134,11 @@ public class GraphGUI extends JFrame {
     private void startAlgorithm() {
         algorithm = createAlgorithm((AlgoType) algoSelectionBox.getSelectedItem());
         algorithm.setGraphPanel(graphPanel);
-        try {
-            algorithm.runAlgorithm();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        algorithm.startAlgorithm();
+//        try {
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
     }
 
     private void stopAlgorithm() {

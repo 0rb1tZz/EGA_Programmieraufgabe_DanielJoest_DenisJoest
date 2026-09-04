@@ -4,7 +4,9 @@ import graph.Edge;
 import graph.Graph;
 import graph.Node;
 import graph.ResidualGraph;
+import gui.GraphPanel;
 
+import javax.swing.*;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,9 +25,21 @@ public abstract class BaseAlgorithm {
     protected boolean noMoreAugmentingPath = false;
     private boolean takeStep = true;
     private boolean autoRun = true; //false;
+    private GraphPanel graphPanel;
 
     public BaseAlgorithm(Graph graph) {
         residualGraph = graph; // residualGraph = new ResidualGraph(graph);
+    }
+
+    public void startAlgorithm() {
+        new Thread(() -> {
+            try {
+                int maxFlow = runAlgorithm();
+                System.out.println("Algorithm finished. Max Flow: " + maxFlow);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }).start();
     }
 
     public int runAlgorithm() throws InterruptedException {
@@ -49,7 +63,7 @@ public abstract class BaseAlgorithm {
             }
             for(Node n: residualGraph.getNodes())
                 n.setVisitedInCurrentSearch(false);
-            // TODO: insert repaint method of graphPanel here
+            SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
         return residualGraph.getMaxFlow();
     }
@@ -78,5 +92,9 @@ public abstract class BaseAlgorithm {
 
     public List<Edge> getCurrentAugmentingPath() {
         return currentAugmentingPath;
+    }
+
+    public void setGraphPanel(GraphPanel graphPanel) {
+        this.graphPanel = graphPanel;
     }
 }
