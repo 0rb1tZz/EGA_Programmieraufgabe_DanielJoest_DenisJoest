@@ -3,12 +3,10 @@ package gui;
 import algo.*;
 import graph.Edge;
 import graph.Graph;
-import graph.GraphBuilder;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.util.Random;
 
 public class GraphGUI extends JFrame {
 
@@ -29,14 +27,11 @@ public class GraphGUI extends JFrame {
     private final JComboBox<AlgoType> algoSelectionBox = new JComboBox<>(AlgoType.values());
 
 
-    private final JButton newGraphButton = new JButton("New Graph");
-    private final JButton startButton = new JButton("Start");
-    private final JButton stopButton = new JButton("Stop");
+    private final JButton confirmButton = new JButton("Confirm");
+    // private final JButton stopButton = new JButton("Stop");
     private final JButton stepButton = new JButton("Step");
     private final JToggleButton autoButton = new JToggleButton("Auto Run");
     private final JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
-    private final JCheckBox edgeLabelToggle = new JCheckBox("Show Edge Labels", false);
-    private final JCheckBox nodeLabelToggle = new JCheckBox("Show Node Labels", false);
 
     private final JLabel statusLabel = new JLabel(" ");
     private final JLabel flowLabel = new JLabel(" ");
@@ -52,15 +47,17 @@ public class GraphGUI extends JFrame {
         this.setSize(1920, 1080);
         this.setLayout(new BorderLayout());
 
-        add(buildMenuBar(), BorderLayout.NORTH);
-        add(buildStatusBar(), BorderLayout.SOUTH);
+        this.add(new GraphGenerationPanel(this, graphPanel), BorderLayout.WEST);
+        this.add(buildMenuBar(), BorderLayout.NORTH);
+        this.add(buildStatusBar(), BorderLayout.SOUTH);
 
         graphPanel.setGraphGUI(this);
         var scrollPane = new JScrollPane(graphPanel);
         this.add(scrollPane, BorderLayout.CENTER);
-        this.add(new GraphGenerationPanel(graphPanel), BorderLayout.EAST);
 
         addListeners();
+        toggleMenuControls(false);
+        confirmButton.setEnabled(false);
 
         SwingUtilities.invokeLater(() -> {this.validate(); this.repaint(); this.setVisible(true);});
     }
@@ -73,19 +70,17 @@ public class GraphGUI extends JFrame {
     private JComponent buildMenuBar() {
         JPanel menuBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));
         menuBar.setBackground(Color.LIGHT_GRAY);
-        menuBar.add(newGraphButton);
         menuBar.add(new JLabel("Choose Algo Type:"));
         menuBar.add(algoSelectionBox);
-        menuBar.add(startButton);
-        menuBar.add(stopButton);
+        menuBar.add(confirmButton);
         menuBar.add(new JSeparator(SwingConstants.VERTICAL));
         menuBar.add(stepButton);
+        menuBar.add(new JSeparator(SwingConstants.VERTICAL));
         menuBar.add(autoButton);
         menuBar.add(new JLabel("Speed:"));
         speedSlider.setPreferredSize(new Dimension(150, 20));
         menuBar.add(speedSlider);
-        menuBar.add(edgeLabelToggle);
-        menuBar.add(nodeLabelToggle);
+
         return menuBar;
     }
 
@@ -133,12 +128,15 @@ public class GraphGUI extends JFrame {
 
     private void startAlgorithm() {
         algorithm = createAlgorithm((AlgoType) algoSelectionBox.getSelectedItem());
+        algorithm.setGraphGUI(this);
         algorithm.setGraphPanel(graphPanel);
         algorithm.startAlgorithm();
 //        try {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
+        statusLabel.setText("Algorithm running.");
+        toggleMenuControls(true);
     }
 
     private void stopAlgorithm() {
@@ -154,24 +152,31 @@ public class GraphGUI extends JFrame {
         };
     }
 
-    private void toggleMenuControls(boolean running) {
+    public void toggleMenuControls(boolean running) {
         algoSelectionBox.setEnabled(!running);
+        confirmButton.setEnabled(!running);
 
         stepButton.setEnabled(running);
+        autoButton.setSelected(false);
         autoButton.setEnabled(running);
         speedSlider.setEnabled(running);
-        stopButton.setEnabled(running);
+        // stopButton.setEnabled(running);
     }
 
     private void addListeners() {
-        newGraphButton.addActionListener(e -> {generateNewGraph();});
-        startButton.addActionListener(e -> {startAlgorithm();});
-        stopButton.addActionListener(e -> {stopAlgorithm();});
-        stepButton.addActionListener(e -> {algorithm.setTakeStep(stepButton.isSelected()); algorithm.setAutoRun(false);});
+        confirmButton.addActionListener(e -> {startAlgorithm();});
+        // stopButton.addActionListener(e -> {stopAlgorithm();});
+        stepButton.addActionListener(e -> {algorithm.setTakeStep(true); algorithm.setAutoRun(false);});
         autoButton.addActionListener(e -> {algorithm.setAutoRun(autoButton.isSelected());});
+        speedSlider.addChangeListener(e -> {algorithm.setStepSizeInMillis(speedSlider.getValue() * 10L);});
+    }
 
-        edgeLabelToggle.addActionListener(e -> {graphPanel.setShowEdgeLabels(edgeLabelToggle.isSelected());});
-        nodeLabelToggle.addActionListener(e -> {graphPanel.setNodeEdgeLabels(nodeLabelToggle.isSelected());});
+    public void onAlgoFinished(int maxFlow) {
+        SwingUtilities.invokeLater(() -> {
+            toggleMenuControls(false);
+            statusLabel.setText("Algorithm finished.");
+            flowLabel.setText("Max Flow: " + maxFlow);
+        }); // kp warums nicht geht
     }
 
     public void setGraph(Graph graph){

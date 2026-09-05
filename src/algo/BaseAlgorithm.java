@@ -4,6 +4,7 @@ import graph.Edge;
 import graph.Graph;
 import graph.Node;
 import graph.ResidualGraph;
+import gui.GraphGUI;
 import gui.GraphPanel;
 
 import javax.swing.*;
@@ -24,7 +25,9 @@ public abstract class BaseAlgorithm {
     protected LinkedList<Edge> currentAugmentingPath = new LinkedList<Edge>();
     protected boolean noMoreAugmentingPath = false;
     private boolean takeStep = true;
-    private boolean autoRun = true; //false;
+    private boolean autoRun = false;
+    private long stepSizeInMillis = 500L;
+    private GraphGUI graphGUI;
     private GraphPanel graphPanel;
 
     public BaseAlgorithm(Graph graph) {
@@ -45,9 +48,9 @@ public abstract class BaseAlgorithm {
     public int runAlgorithm() throws InterruptedException {
         while(!noMoreAugmentingPath){
             System.out.println("Iter");
-            Thread.sleep(400);
+            Thread.sleep(stepSizeInMillis);
             while(!takeStep && !autoRun){
-                Thread.sleep(400);
+                Thread.sleep(stepSizeInMillis);
             }
             takeStep = false;
 
@@ -65,7 +68,10 @@ public abstract class BaseAlgorithm {
                 n.setVisitedInCurrentSearch(false);
             SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
-        return residualGraph.getMaxFlow();
+
+        var maxFlow = residualGraph.getMaxFlow();
+        graphGUI.onAlgoFinished(maxFlow); // Methode wird nicht (korrekt?) aufgerufen
+        return maxFlow;
     }
 
 
@@ -90,8 +96,16 @@ public abstract class BaseAlgorithm {
         this.autoRun = autoRun;
     }
 
+    public void setStepSizeInMillis(long stepSizeInMillis) {
+        this.stepSizeInMillis = stepSizeInMillis;
+    }
+
     public List<Edge> getCurrentAugmentingPath() {
         return currentAugmentingPath;
+    }
+
+    public void setGraphGUI(GraphGUI graphGUI) {
+        this.graphGUI = graphGUI;
     }
 
     public void setGraphPanel(GraphPanel graphPanel) {
