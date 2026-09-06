@@ -100,36 +100,11 @@ public class GraphGUI extends JFrame {
         return statusBar;
     }
 
-
-    private void generateNewGraph() {
-        stopAlgorithm();
-        Graph graph = new Graph(); // properties
-
-        if (graph == null) {
-            JOptionPane.showMessageDialog(this, "Please select a Graph", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-//        try {
-//            int nodeCount = Integer.parseInt(nodeCountField.getText());
-//            int capacity = Integer.parseInt(maxCapacityField.getText());
-//            int seed = seedField.getText().isEmpty() ? new Random().nextInt() : Integer.parseInt(seedField.getText());
-//            graphPanel.setGraph(new GraphBuilder(nodeCount, capacity, seed));
-//        } catch (NumberFormatException ex) {
-//            JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-
-        currentGraph = graph;
-        //graphPanel.setGraph(graph);
-        statusLabel.setText("Graph Created with " + graph.getNodes().size() + " Nodes.");
-        flowLabel.setText(" ");
-        toggleMenuControls(false);
-    }
-
     private void startAlgorithm() {
         algorithm = createAlgorithm((AlgoType) algoSelectionBox.getSelectedItem());
         algorithm.setGraphGUI(this);
         algorithm.setGraphPanel(graphPanel);
+        setStepSizeInMillis();
         algorithm.startAlgorithm();
 //        try {
 //        } catch (InterruptedException e) {
@@ -168,7 +143,11 @@ public class GraphGUI extends JFrame {
         // stopButton.addActionListener(e -> {stopAlgorithm();});
         stepButton.addActionListener(e -> {algorithm.setTakeStep(true); algorithm.setAutoRun(false);});
         autoButton.addActionListener(e -> {algorithm.setAutoRun(autoButton.isSelected());});
-        speedSlider.addChangeListener(e -> {algorithm.setStepSizeInMillis(speedSlider.getValue() * 10L);});
+        speedSlider.addChangeListener(e -> {setStepSizeInMillis();});
+    }
+
+    private void setStepSizeInMillis() {
+        algorithm.setStepSizeInMillis((100 - speedSlider.getValue()) * 10L);
     }
 
     public void onAlgoFinished(int maxFlow) {
@@ -176,7 +155,7 @@ public class GraphGUI extends JFrame {
             toggleMenuControls(false);
             statusLabel.setText("Algorithm finished.");
             flowLabel.setText("Max Flow: " + maxFlow);
-        }); // kp warums nicht geht
+        });
     }
 
     public void setGraph(Graph graph){

@@ -62,7 +62,7 @@ public class GraphGenerationPanel extends JPanel {
         JLabel maxCapacityLabel = new JLabel("Max Capacity:");
         maxCapacityLabel.setForeground(TEXT_COLOR);
         maxCapacityPanel.add(maxCapacityLabel);
-        maxCapacityField = new JTextField("5", 5);
+        maxCapacityField = new JTextField("20", 5);
         maxCapacityPanel.add(maxCapacityField);
         maxCapacityPanel.setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         maxCapacityPanel.setMaximumSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));

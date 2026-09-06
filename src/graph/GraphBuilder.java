@@ -74,7 +74,7 @@ public class GraphBuilder {
                     j--;
                 }
             }
-            graph.addEdge(edge1, maxCapacity);
+            graph.addEdge(edge1, random.nextInt(maxCapacity));
         }
     }
 

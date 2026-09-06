@@ -24,7 +24,7 @@ public abstract class BaseAlgorithm {
     protected Graph residualGraph;
     protected LinkedList<Edge> currentAugmentingPath = new LinkedList<Edge>();
     protected boolean noMoreAugmentingPath = false;
-    private boolean takeStep = true;
+    private boolean takeStep = false;
     private boolean autoRun = false;
     private long stepSizeInMillis = 500L;
     private GraphGUI graphGUI;
@@ -38,6 +38,7 @@ public abstract class BaseAlgorithm {
         new Thread(() -> {
             try {
                 int maxFlow = runAlgorithm();
+                graphGUI.onAlgoFinished(maxFlow);
                 System.out.println("Algorithm finished. Max Flow: " + maxFlow);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -68,10 +69,7 @@ public abstract class BaseAlgorithm {
                 n.setVisitedInCurrentSearch(false);
             SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
-
-        var maxFlow = residualGraph.getMaxFlow();
-        graphGUI.onAlgoFinished(maxFlow); // Methode wird nicht (korrekt?) aufgerufen
-        return maxFlow;
+        return residualGraph.getMaxFlow();
     }
 
 
