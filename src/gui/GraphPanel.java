@@ -107,7 +107,14 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             g2d.setColor(Color.ORANGE);
 
             for (Edge edge : graphGUI.getCurrentAugmentingPath()) {
-                g2d.drawLine(edge.getSourceNode().getX(), edge.getSourceNode().getY(), edge.getTargetNode().getX(), edge.getTargetNode().getY());
+                double[] edgeNormal = calculateEdgeNormal(edge, nodeRadius/2);
+                int x1 = edge.getSourceNode().getX() + (int) edgeNormal[0];
+                int y1 = edge.getSourceNode().getY() + (int) edgeNormal[1];
+                int x2 = edge.getTargetNode().getX() + (int) edgeNormal[0];
+                int y2 = edge.getTargetNode().getY() + (int) edgeNormal[1];
+
+                g2d.drawLine(x1, y1, x2, y2);
+                drawArrow(g2d, x1, y1, x2, y2);
             }
         }
 
@@ -129,7 +136,13 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
 
         for (Node node : graph.getNodes()) {
             // Draw node circle
-            g2d.setColor(new Color(70, 130, 180)); // Steel Blue
+            if(graph.getSourceNode() == node){
+                g2d.setColor(Color.white);
+            }else if(graph.getTargetNode() == node){
+                g2d.setColor(Color.orange);
+            }else{
+                g2d.setColor(new Color(70, 130, 180)); // Steel Blue
+            }
             g2d.fillOval(node.getX() - (int) nodeRadius, node.getY() - (int) nodeRadius, 2 * (int) nodeRadius, 2 * (int) nodeRadius);
 
             // Draw node outline
@@ -173,17 +186,16 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
         // stop the arrow tip a little before the target node's circle
         double tipX = x2 - ux * (nodeRadius + 2);
         double tipY = y2 - uy * (nodeRadius + 2);
-        double back1x = tipX - ux * 8 - (-uy) * 4; // Skalierung per Zoom fixen
-        double back1y = tipY - uy * 8 - (ux) * 4;
-        double back2x = tipX - ux * 8 + (-uy) * 4;
-        double back2y = tipY - uy * 8 + (ux) * 4;
+        double back1x = tipX - ux * 8/zoomFactor - (-uy) * 4/zoomFactor; // Skalierung per Zoom fixen
+        double back1y = tipY - uy * 8/zoomFactor - (ux) * 4/zoomFactor;
+        double back2x = tipX - ux * 8/zoomFactor + (-uy) * 4/zoomFactor;
+        double back2y = tipY - uy * 8/zoomFactor + (ux) * 4/zoomFactor;
 
         Path2D.Double arrow = new Path2D.Double();
         arrow.moveTo(tipX, tipY);
         arrow.lineTo(back1x, back1y);
         arrow.lineTo(back2x, back2y);
         arrow.closePath();
-        g2d.setColor(Color.WHITE);
         g2d.fill(arrow);
     }
 
