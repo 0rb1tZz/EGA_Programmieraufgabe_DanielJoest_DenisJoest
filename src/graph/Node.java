@@ -12,6 +12,8 @@ public class Node {
     private int y;
 
     private boolean visitedInCurrentSearch;
+    private int depthLevelInCurrentIteration = -1;
+    private boolean destroyedForCurrentIteration = false;
     private Edge cameFromInCurrentSearch;
 
     private final List<Edge> outgoingEdges = new LinkedList<Edge>();
@@ -61,6 +63,22 @@ public class Node {
 
     public void setVisitedInCurrentSearch(boolean visitedInCurrentSearch) {
         this.visitedInCurrentSearch = visitedInCurrentSearch;
+    }
+
+    public int getDepthLevelInCurrentIteration() {
+        return depthLevelInCurrentIteration;
+    }
+
+    public void setDepthLevelInCurrentIteration(int depthLevelInCurrentIteration) {
+        this.depthLevelInCurrentIteration = depthLevelInCurrentIteration;
+    }
+
+    public boolean isDestroyedForCurrentIteration() {
+        return destroyedForCurrentIteration;
+    }
+
+    public void setDestroyedForCurrentIteration(boolean destroyedForCurrentIteration) {
+        this.destroyedForCurrentIteration = destroyedForCurrentIteration;
     }
 
     public void setCameFromInCurrentSearch(Edge e){

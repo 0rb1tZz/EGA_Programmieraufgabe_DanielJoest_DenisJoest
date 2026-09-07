@@ -24,11 +24,11 @@ public abstract class BaseAlgorithm {
     protected Graph residualGraph;
     protected LinkedList<Edge> currentAugmentingPath = new LinkedList<Edge>();
     protected boolean noMoreAugmentingPath = false;
-    private boolean takeStep = false;
-    private boolean autoRun = false;
-    private long stepSizeInMillis = 500L;
-    private GraphGUI graphGUI;
-    private GraphPanel graphPanel;
+    protected boolean takeStep = false;
+    protected boolean autoRun = false;
+    protected long stepSizeInMillis = 500L;
+    protected GraphGUI graphGUI;
+    protected GraphPanel graphPanel;
 
     public BaseAlgorithm(Graph graph) {
         residualGraph = graph; // residualGraph = new ResidualGraph(graph);
@@ -46,7 +46,7 @@ public abstract class BaseAlgorithm {
         }).start();
     }
 
-    public int runAlgorithm() throws InterruptedException {
+    protected int runAlgorithm() throws InterruptedException {
         while(!noMoreAugmentingPath){
             System.out.println("Iter");
             Thread.sleep(stepSizeInMillis);

@@ -10,12 +10,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import java.util.List;
 
 public class GraphPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener {
     private Graph graph;
     private static final double BASE_NODE_RADIUS = 20;
     private double nodeRadius = 20;
-    private static final double BASE_EDGE_THICKNESS = 2;
+    private static final double BASE_EDGE_THICKNESS = 4;
     private double edgeThickness = BASE_EDGE_THICKNESS;
     private static final int BASE_FONT_SIZE = 12;
     private int fontSize = 12;
@@ -100,22 +101,11 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         // Draw Edges first so they sit behind the nodes
-        drawEdges(g2d);
+        drawEdges(g2d, graph.getEdges(), false);
 
         // Re-Draw edges in orange that are part of the current augmenting path
         if (graphGUI.getCurrentAugmentingPath() != null){
-            g2d.setColor(Color.ORANGE);
-
-            for (Edge edge : graphGUI.getCurrentAugmentingPath()) {
-                double[] edgeNormal = calculateEdgeNormal(edge, nodeRadius/2);
-                int x1 = edge.getSourceNode().getX() + (int) edgeNormal[0];
-                int y1 = edge.getSourceNode().getY() + (int) edgeNormal[1];
-                int x2 = edge.getTargetNode().getX() + (int) edgeNormal[0];
-                int y2 = edge.getTargetNode().getY() + (int) edgeNormal[1];
-
-                g2d.drawLine(x1, y1, x2, y2);
-                drawArrow(g2d, x1, y1, x2, y2);
-            }
+            drawEdges(g2d, graphGUI.getCurrentAugmentingPath(), true);
         }
 
         // Draw edge capacities
@@ -154,19 +144,33 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
                 g2d.setColor(Color.WHITE);
                 g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
                 FontMetrics fm = g2d.getFontMetrics();
-                int textX = node.getX() - (fm.stringWidth(String.valueOf(node.getId())) / 2);
+                //int textX = node.getX() - (fm.stringWidth(String.valueOf(node.getId())) / 2);
+                int textX = node.getX() - (fm.stringWidth(String.valueOf(node.getDepthLevelInCurrentIteration())) / 2);
                 int textY = node.getY() + (fm.getAscent() / 2);
-                g2d.drawString(String.valueOf(node.getId()), textX, textY);
+                //g2d.drawString(String.valueOf(node.getId()), textX, textY);
+                g2d.drawString(String.valueOf(node.getDepthLevelInCurrentIteration()), textX, textY);
             }
         }
 
 
     }
 
-    private void drawEdges(Graphics2D g2d) {
-        g2d.setStroke(new BasicStroke((float) edgeThickness));
-        g2d.setColor(Color.WHITE);
-        for (Edge edge : graph.getEdges()) {
+    private void drawEdges(Graphics2D g2d, List<Edge> edges, boolean highlightEdges) {
+        for (Edge edge : edges) {
+            // blend/scale edge color and thickness based on its capacity utilization
+            if (!highlightEdges) {
+                int edgeCapacity = edge.getCapacity();
+                double capacityUtilizationRatio = edgeCapacity <= 0 ? 0 : Math.max(0, edge.getFlow() / (double) edgeCapacity);
+                Color blendedEdgeColor = blendColors(Color.WHITE, Color.DARK_GRAY, capacityUtilizationRatio);
+                g2d.setColor(blendedEdgeColor);
+                float scaledEdgeThickness = (float) Math.max(2, edgeThickness * capacityUtilizationRatio);
+                g2d.setStroke(new BasicStroke(scaledEdgeThickness));
+            } else {
+                g2d.setColor(Color.ORANGE);
+                g2d.setStroke(new BasicStroke((float) edgeThickness));
+            }
+
+            // draw the edge
             double[] edgeNormal = calculateEdgeNormal(edge, nodeRadius/2);
             int x1 = edge.getSourceNode().getX() + (int) edgeNormal[0];
             int y1 = edge.getSourceNode().getY() + (int) edgeNormal[1];
@@ -216,6 +220,13 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
         edgeNormal[1] = (edgeNormal[1] / lengthOfNormal) * length;
 
         return edgeNormal;
+    }
+
+    private Color blendColors(Color c1, Color c2, double blendFactor){
+        int r = (int) (c1.getRed() + (c2.getRed() - c1.getRed()) * blendFactor);
+        int g =  (int) (c1.getGreen() + (c2.getGreen() - c1.getGreen()) * blendFactor);
+        int b = (int) (c1.getBlue() + (c2.getBlue() - c1.getBlue()) * blendFactor);
+        return new Color(r, g, b);
     }
 
     private void setupMouse() {
