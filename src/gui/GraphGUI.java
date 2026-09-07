@@ -35,6 +35,7 @@ public class GraphGUI extends JFrame {
 
     private final JLabel statusLabel = new JLabel(" ");
     private final JLabel flowLabel = new JLabel(" ");
+    private final JLabel blockingFlowLabel = new JLabel(" ");
 
     private Graph currentGraph;
     private BaseAlgorithm algorithm;
@@ -95,8 +96,10 @@ public class GraphGUI extends JFrame {
         statusBar.setBorder(BorderFactory.createEmptyBorder(4,8,4,8));
         statusLabel.setFont(statusLabel.getFont().deriveFont(Font.PLAIN, 13f));
         flowLabel.setFont(flowLabel.getFont().deriveFont(Font.BOLD, 13f));
-        statusBar.add(statusLabel, BorderLayout.CENTER);
+        blockingFlowLabel.setFont(blockingFlowLabel.getFont().deriveFont(Font.BOLD, 13f));
+        statusBar.add(statusLabel, BorderLayout.WEST);
         statusBar.add(flowLabel, BorderLayout.EAST);
+        statusBar.add(blockingFlowLabel, BorderLayout.CENTER);
         return statusBar;
     }
 
@@ -155,6 +158,12 @@ public class GraphGUI extends JFrame {
             toggleMenuControls(false);
             statusLabel.setText("Algorithm finished.");
             flowLabel.setText("Max Flow: " + maxFlow);
+        });
+    }
+
+    public void setBlockingFlowLabelText(int blockingFlow) {
+        SwingUtilities.invokeLater(() -> {
+            blockingFlowLabel.setText("Current blocking flow: " + blockingFlow);
         });
     }
 

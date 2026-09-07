@@ -16,8 +16,8 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
     private Graph graph;
     private static final double BASE_NODE_RADIUS = 20;
     private double nodeRadius = 20;
-    private static final double BASE_EDGE_THICKNESS = 4;
-    private double edgeThickness = BASE_EDGE_THICKNESS;
+    private static final double BASE_LINE_THICKNESS = 4;
+    private double lineThickness = BASE_LINE_THICKNESS;
     private static final int BASE_FONT_SIZE = 12;
     private int fontSize = 12;
     private boolean showEdgeLabels = false;
@@ -137,6 +137,7 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
 
             // Draw node outline
             g2d.setColor(Color.DARK_GRAY);
+            g2d.setStroke(new BasicStroke((float) lineThickness /2));
             g2d.drawOval(node.getX() - (int) nodeRadius, node.getY() - (int) nodeRadius, 2 * (int) nodeRadius, 2 * (int) nodeRadius);
 
             if (showNodeLabels) {
@@ -163,11 +164,11 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
                 double capacityUtilizationRatio = edgeCapacity <= 0 ? 0 : Math.max(0, edge.getFlow() / (double) edgeCapacity);
                 Color blendedEdgeColor = blendColors(Color.WHITE, Color.DARK_GRAY, capacityUtilizationRatio);
                 g2d.setColor(blendedEdgeColor);
-                float scaledEdgeThickness = (float) Math.max(2, edgeThickness * capacityUtilizationRatio);
+                float scaledEdgeThickness = (float) Math.max(2, lineThickness * capacityUtilizationRatio);
                 g2d.setStroke(new BasicStroke(scaledEdgeThickness));
             } else {
                 g2d.setColor(Color.ORANGE);
-                g2d.setStroke(new BasicStroke((float) edgeThickness));
+                g2d.setStroke(new BasicStroke((float) lineThickness));
             }
 
             // draw the edge
@@ -190,10 +191,10 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
         // stop the arrow tip a little before the target node's circle
         double tipX = x2 - ux * (nodeRadius + 2);
         double tipY = y2 - uy * (nodeRadius + 2);
-        double back1x = tipX - ux * 8/zoomFactor - (-uy) * 4/zoomFactor; // Skalierung per Zoom fixen
-        double back1y = tipY - uy * 8/zoomFactor - (ux) * 4/zoomFactor;
-        double back2x = tipX - ux * 8/zoomFactor + (-uy) * 4/zoomFactor;
-        double back2y = tipY - uy * 8/zoomFactor + (ux) * 4/zoomFactor;
+        double back1x = tipX - ux * 16/zoomFactor - (-uy) * 8/zoomFactor; // Skalierung per Zoom fixen
+        double back1y = tipY - uy * 16/zoomFactor - (ux) * 8/zoomFactor;
+        double back2x = tipX - ux * 16/zoomFactor + (-uy) * 8/zoomFactor;
+        double back2y = tipY - uy * 16/zoomFactor + (ux) * 8/zoomFactor;
 
         Path2D.Double arrow = new Path2D.Double();
         arrow.moveTo(tipX, tipY);
@@ -339,7 +340,7 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             if (zoomFactor >= 5) return;
             zoomFactor *= 1.1;
             nodeRadius = (BASE_NODE_RADIUS / zoomFactor);
-            edgeThickness = (BASE_EDGE_THICKNESS / zoomFactor);
+            lineThickness = (BASE_LINE_THICKNESS / zoomFactor);
             fontSize = (int) (BASE_FONT_SIZE / zoomFactor);
             repaint();
         }
@@ -348,7 +349,7 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             if (zoomFactor <= 0.2) return;
             zoomFactor /= 1.1;
             nodeRadius = (BASE_NODE_RADIUS / zoomFactor);
-            edgeThickness = (BASE_EDGE_THICKNESS / zoomFactor);
+            lineThickness = (BASE_LINE_THICKNESS / zoomFactor);
             fontSize = (int) (BASE_FONT_SIZE / zoomFactor);
             repaint();
         }

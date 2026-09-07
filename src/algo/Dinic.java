@@ -17,15 +17,17 @@ public class Dinic extends BaseAlgorithm {
     @Override
     protected int runAlgorithm() throws InterruptedException {
         boolean keepRunning = true;
-        while (keepRunning) { // applyDepthLabel() war vorher hier, da gings TODO
+        while (keepRunning) {
             Thread.sleep(stepSizeInMillis);
             while(!takeStep && !autoRun){
                 Thread.sleep(stepSizeInMillis);
             }
             takeStep = false;
-            keepRunning = applyDepthLabels(); // ist jetzt hier TODO
-            dinicBlockingFlow();
             resetIteration();
+            keepRunning = applyDepthLabels();
+            dinicBlockingFlow();
+
+            SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
         return residualGraph.getMaxFlow();
     }
@@ -45,9 +47,8 @@ public class Dinic extends BaseAlgorithm {
                 e.addFlow(bottleneck);
                 e.getReverseEdge().addFlow(-bottleneck);
             }
-            SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
-
+        graphGUI.setBlockingFlowLabelText(blockingFlow);
         return null;
     }
 
