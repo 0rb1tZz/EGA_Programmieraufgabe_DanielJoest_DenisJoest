@@ -28,7 +28,7 @@ public class GraphGUI extends JFrame {
 
 
     private final JButton confirmButton = new JButton("Confirm");
-    // private final JButton stopButton = new JButton("Stop");
+    // private final JButton resetButton = new JButton("Reset Graph");
     private final JButton stepButton = new JButton("Step");
     private final JToggleButton autoButton = new JToggleButton("Auto Run");
     private final JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
@@ -59,6 +59,7 @@ public class GraphGUI extends JFrame {
         addListeners();
         toggleMenuControls(false);
         confirmButton.setEnabled(false);
+        // resetButton.setEnabled(false);
 
         SwingUtilities.invokeLater(() -> {this.validate(); this.repaint(); this.setVisible(true);});
     }
@@ -75,6 +76,8 @@ public class GraphGUI extends JFrame {
         menuBar.add(algoSelectionBox);
         menuBar.add(confirmButton);
         menuBar.add(new JSeparator(SwingConstants.VERTICAL));
+//        menuBar.add(resetButton);
+//        menuBar.add(new JSeparator(SwingConstants.VERTICAL));
         menuBar.add(stepButton);
         menuBar.add(new JSeparator(SwingConstants.VERTICAL));
         menuBar.add(autoButton);
@@ -103,7 +106,10 @@ public class GraphGUI extends JFrame {
         return statusBar;
     }
 
-    private void startAlgorithm() {
+    private void confirmAlgorithm() {
+        currentGraph.resetGraphBeforeAlgoRun();
+        graphPanel.repaint();
+
         algorithm = createAlgorithm((AlgoType) algoSelectionBox.getSelectedItem());
         algorithm.setGraphGUI(this);
         algorithm.setGraphPanel(graphPanel);
@@ -113,13 +119,16 @@ public class GraphGUI extends JFrame {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
 //        }
-        statusLabel.setText("Algorithm running.");
+        statusLabel.setText("Algorithm running...");
+        flowLabel.setText(" ");
         toggleMenuControls(true);
     }
 
-    private void stopAlgorithm() {
-
-    }
+//    private void resetGraph() {
+//        currentGraph.resetGraphAfterAlgoRun();
+//        graphPanel.repaint();
+//        confirmButton.setEnabled(true);
+//    }
 
     private BaseAlgorithm createAlgorithm(AlgoType algoType) {
         return switch (algoType) {
@@ -133,17 +142,18 @@ public class GraphGUI extends JFrame {
     public void toggleMenuControls(boolean running) {
         algoSelectionBox.setEnabled(!running);
         confirmButton.setEnabled(!running);
+        // resetButton.setEnabled(!running);
 
         stepButton.setEnabled(running);
         autoButton.setSelected(false);
         autoButton.setEnabled(running);
         speedSlider.setEnabled(running);
-        // stopButton.setEnabled(running);
     }
 
     private void addListeners() {
-        confirmButton.addActionListener(e -> {startAlgorithm();});
-        // stopButton.addActionListener(e -> {stopAlgorithm();});
+        confirmButton.addActionListener(e -> {
+            confirmAlgorithm();});
+        // resetButton.addActionListener(e -> {resetGraph();});
         stepButton.addActionListener(e -> {algorithm.setTakeStep(true); algorithm.setAutoRun(false);});
         autoButton.addActionListener(e -> {algorithm.setAutoRun(autoButton.isSelected());});
         speedSlider.addChangeListener(e -> {setStepSizeInMillis();});

@@ -1,6 +1,7 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,11 +13,14 @@ public class Node {
     private int y;
 
     private boolean visitedInCurrentSearch;
-    private int depthLevelInCurrentIteration = -1;
+    private int depthLevelInCurrentIteration = -1; // aka d(v)
     private boolean destroyedForCurrentIteration = false;
     private Edge cameFromInCurrentSearch;
 
     private final List<Edge> outgoingEdges = new LinkedList<Edge>();
+    private Iterator<Edge> currentEdge = outgoingEdges.listIterator();
+
+    private int excess = 0; // aka e_f(v)
 
 
     public Node(int id, int x, int y){
@@ -89,8 +93,28 @@ public class Node {
         return cameFromInCurrentSearch;
     }
 
+    public Edge getCurrentEdge(){
+        return currentEdge.next();
+    }
+
+    public int getExcess() {
+        return excess;
+    }
+
+    public void setExcess(int excess) {
+        this.excess = excess;
+    }
+
     public Node copy(){
         return new Node(this.id, this.x, this.y);
+    }
+
+    public void reset(){
+        visitedInCurrentSearch = false;
+        depthLevelInCurrentIteration = -1;
+        destroyedForCurrentIteration = false;
+        cameFromInCurrentSearch = null;
+        currentEdge = outgoingEdges.listIterator(); // reset the iterator
     }
 
     @Override

@@ -1,7 +1,6 @@
 package graph;
 
 import java.util.LinkedList;
-import java.util.Random;
 
 public class Graph {
 
@@ -68,5 +67,12 @@ public class Graph {
         }
         System.out.println(flow);
         return flow;
+    }
+
+    public void resetGraphBeforeAlgoRun(){
+        for (Edge edge : edges)
+            edge.reset();
+        for (Node node : nodes)
+            node.reset();
     }
 }

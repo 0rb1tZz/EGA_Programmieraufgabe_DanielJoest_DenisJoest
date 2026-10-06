@@ -69,6 +69,11 @@ public class Edge {
         return capacity - flow;
     }
 
+    public void reset(){
+        flow = 0;
+
+    }
+
     @Override
     public String toString() {
         return sourceNode.toString() + " -> " + targetNode.toString();

@@ -1,5 +1,10 @@
 package graph;
 
+import io.github.jdiemke.triangulation.DelaunayTriangulator;
+import io.github.jdiemke.triangulation.NotEnoughPointsException;
+import io.github.jdiemke.triangulation.Triangle2D;
+import io.github.jdiemke.triangulation.Vector2D;
+
 import java.util.*;
 
 public class GraphBuilder {
@@ -41,11 +46,48 @@ public class GraphBuilder {
         graph.setTargetNode(graph.getNodes().getLast());
     }
 
+    private void generateEdges() {
+        var nodes = graph.getNodes();
+
+        List<Vector2D> points = new ArrayList<>(nodes.size());
+        for (var node : nodes) {
+            points.add(new Vector2D(node.getX(), node.getY()));
+        }
+
+        DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator(points);
+        try {
+            delaunayTriangulator.triangulate();
+        } catch (NotEnoughPointsException e) {
+            throw new IllegalStateException("Need at least three points to triangulate", e);
+        }
+
+        Map<Vector2D, Node>  pointToNode = new IdentityHashMap<>();
+        for (int i = 0; i < nodeCount; i++)
+            pointToNode.put(points.get(i), nodes.get(i));
+
+        boolean[][] edgeMap = new boolean[nodeCount][nodeCount];
+        for(Triangle2D triangle : delaunayTriangulator.getTriangles()){
+            addUndirectedEdgeOnce(pointToNode.get(triangle.a), pointToNode.get(triangle.b), edgeMap);
+            addUndirectedEdgeOnce(pointToNode.get(triangle.b), pointToNode.get(triangle.c), edgeMap);
+            addUndirectedEdgeOnce(pointToNode.get(triangle.c), pointToNode.get(triangle.a), edgeMap);
+        }
+    }
+
+    private void addUndirectedEdgeOnce(Node a, Node b, boolean[][] edgeMap) {
+        if(edgeMap[a.getId()][b.getId()])
+            return;
+        edgeMap[a.getId()][b.getId()] = true;
+        edgeMap[b.getId()][a.getId()] = true;
+        Edge edge = new Edge(a, b, random.nextInt(maxCapacity));
+        graph.addEdge(edge,random.nextInt(maxCapacity));
+    }
+
+
     /**
      * Generates the edges of the graph.
      * First construct all possible edges, then removes any that intersect.
      */
-    private void generateEdges() {
+    private void generateEdges2() {
         var nodes = graph.getNodes();
 
         //Generate all basic edges

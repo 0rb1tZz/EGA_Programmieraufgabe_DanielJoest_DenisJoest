@@ -8,8 +8,7 @@ import gui.GraphGUI;
 import gui.GraphPanel;
 
 import javax.swing.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class BaseAlgorithm {
 
@@ -24,6 +23,10 @@ public abstract class BaseAlgorithm {
     protected Graph residualGraph;
     protected LinkedList<Edge> currentAugmentingPath = new LinkedList<Edge>();
     protected boolean noMoreAugmentingPath = false;
+
+    protected List<Node> activeNodes = new LinkedList<Node>();
+    protected boolean[] isNodeActive;
+
     protected boolean takeStep = false;
     protected boolean autoRun = false;
     protected long stepSizeInMillis = 500L;
@@ -31,7 +34,9 @@ public abstract class BaseAlgorithm {
     protected GraphPanel graphPanel;
 
     public BaseAlgorithm(Graph graph) {
-        residualGraph = graph; // residualGraph = new ResidualGraph(graph);
+        residualGraph = graph;
+        isNodeActive = new boolean[graph.getNodes().size()];
+        // residualGraph = new ResidualGraph(graph);
     }
 
     public void startAlgorithm() {
