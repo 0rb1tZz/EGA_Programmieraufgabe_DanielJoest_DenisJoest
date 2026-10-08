@@ -1,9 +1,6 @@
 package graph;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Node {
 
@@ -94,7 +91,15 @@ public class Node {
     }
 
     public Edge getCurrentEdge(){
-        return currentEdge.next();
+        try {
+            return currentEdge.next();
+        } catch (NoSuchElementException e) {
+            return null;
+        }
+    }
+
+    public void resetCurrentEdge(){
+        currentEdge = outgoingEdges.listIterator(); // reset the iterator
     }
 
     public int getExcess() {
@@ -114,7 +119,7 @@ public class Node {
         depthLevelInCurrentIteration = -1;
         destroyedForCurrentIteration = false;
         cameFromInCurrentSearch = null;
-        currentEdge = outgoingEdges.listIterator(); // reset the iterator
+        resetCurrentEdge();
     }
 
     @Override

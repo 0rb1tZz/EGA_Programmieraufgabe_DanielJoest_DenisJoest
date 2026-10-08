@@ -28,6 +28,8 @@ public class GoldbergTarjan extends BaseAlgorithm{
                 firstStep = false;
                 continue;
             }
+            if (activeNodes.isEmpty())
+                return residualGraph.getMaxFlow();
             resetIteration();
             // keepRunning = applyDepthLabels();
             goldbergTarjanInductionStep();
@@ -72,6 +74,38 @@ public class GoldbergTarjan extends BaseAlgorithm{
     }
 
     private void goldbergTarjanInductionStep() {
+        Node v = activeNodes.getFirst();
+        Edge currentEdge = v.getCurrentEdge();
+        int dMin = Integer.MAX_VALUE;
+        while (currentEdge != null && !(currentEdge.getTargetNode().getDepthLevelInCurrentIteration() == v.getDepthLevelInCurrentIteration() - 1)) {
+            currentEdge = v.getCurrentEdge();
+        }
+
+        if(currentEdge != null){
+            Node w = currentEdge.getTargetNode();
+            if (w != residualGraph.getSourceNode() && w != residualGraph.getTargetNode() && w.getExcess() == 0) {
+                if (!isNodeActive[w.getId()])
+                    activeNodes.add(w);
+                isNodeActive[w.getId()] = true;
+            }
+            int pushFlow = Math.min(currentEdge.getRemainingCapacity(), v.getExcess());
+            currentEdge.addFlow(pushFlow);
+            w.setExcess(w.getExcess() + pushFlow);
+            v.setExcess(v.getExcess() - pushFlow);
+            if(v.getExcess() == 0){
+                activeNodes.removeFirst();
+                isNodeActive[v.getId()] = false;
+            }
+        } else {
+            v.resetCurrentEdge();
+            currentEdge = v.getCurrentEdge();
+            while (currentEdge != null) {
+                dMin = Math.min(dMin, currentEdge.getTargetNode().getDepthLevelInCurrentIteration());
+                currentEdge = v.getCurrentEdge();
+            }
+            v.setDepthLevelInCurrentIteration(dMin+1);
+            v.resetCurrentEdge();
+        }
 
 
     }
