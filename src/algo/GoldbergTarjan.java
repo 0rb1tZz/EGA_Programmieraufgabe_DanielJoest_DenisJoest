@@ -45,8 +45,12 @@ public class GoldbergTarjan extends BaseAlgorithm{
 
         for(Edge e: sourceNode.getOutgoingEdges()){
             e.setFlow(e.getCapacity());
-            activeNodes.add(e.getTargetNode());
-            isNodeActive[e.getTargetNode().getId()] = true;
+            e.getReverseEdge().setFlow(-e.getCapacity());
+            e.getTargetNode().setExcess(e.getTargetNode().getExcess() + e.getCapacity());
+            if (e.getTargetNode() != sourceNode && e.getTargetNode() != targetNode) {
+                activeNodes.add(e.getTargetNode());
+                isNodeActive[e.getTargetNode().getId()] = true;
+            }
         }
 
         targetNode.setDepthLevelInCurrentIteration(0);
@@ -77,7 +81,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
         Node v = activeNodes.getFirst();
         Edge currentEdge = v.getCurrentEdge();
         int dMin = Integer.MAX_VALUE;
-        while (currentEdge != null && !(currentEdge.getTargetNode().getDepthLevelInCurrentIteration() == v.getDepthLevelInCurrentIteration() - 1)) {
+        while (currentEdge != null && !(currentEdge.getTargetNode().getDepthLevelInCurrentIteration() == v.getDepthLevelInCurrentIteration() - 1 && currentEdge.getRemainingCapacity() > 0)) {
             currentEdge = v.getCurrentEdge();
         }
 
@@ -90,6 +94,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
             }
             int pushFlow = Math.min(currentEdge.getRemainingCapacity(), v.getExcess());
             currentEdge.addFlow(pushFlow);
+            currentEdge.getReverseEdge().addFlow(-pushFlow);
             w.setExcess(w.getExcess() + pushFlow);
             v.setExcess(v.getExcess() - pushFlow);
             if(v.getExcess() == 0){
@@ -100,7 +105,9 @@ public class GoldbergTarjan extends BaseAlgorithm{
             v.resetCurrentEdge();
             currentEdge = v.getCurrentEdge();
             while (currentEdge != null) {
-                dMin = Math.min(dMin, currentEdge.getTargetNode().getDepthLevelInCurrentIteration());
+                if (currentEdge.getRemainingCapacity() > 0) {
+                    dMin = Math.min(dMin, currentEdge.getTargetNode().getDepthLevelInCurrentIteration());
+                    }
                 currentEdge = v.getCurrentEdge();
             }
             v.setDepthLevelInCurrentIteration(dMin+1);
