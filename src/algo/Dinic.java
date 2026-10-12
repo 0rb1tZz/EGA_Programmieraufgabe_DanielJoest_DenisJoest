@@ -15,7 +15,7 @@ public class Dinic extends BaseAlgorithm {
     }
 
     @Override
-    protected int runAlgorithm() throws InterruptedException {
+    public int runAlgorithm() throws InterruptedException {
         boolean keepRunning = true;
         while (keepRunning) {
             Thread.sleep(stepSizeInMillis);
@@ -27,7 +27,7 @@ public class Dinic extends BaseAlgorithm {
             keepRunning = applyDepthLabels();
             dinicBlockingFlow();
 
-            SwingUtilities.invokeLater(() -> graphPanel.repaint());
+            if (!isTestRun) SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
         return residualGraph.getMaxFlow();
     }

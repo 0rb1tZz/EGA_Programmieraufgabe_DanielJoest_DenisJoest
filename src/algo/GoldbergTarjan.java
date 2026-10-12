@@ -15,7 +15,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
         super(graph);
     }
 
-    protected int runAlgorithm() throws InterruptedException {
+    public int runAlgorithm() throws InterruptedException {
         boolean keepRunning = true;
         while (keepRunning) {
             Thread.sleep(stepSizeInMillis);
@@ -34,7 +34,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
             // keepRunning = applyDepthLabels();
             goldbergTarjanInductionStep();
 
-            SwingUtilities.invokeLater(() -> graphPanel.repaint());
+            if (!isTestRun) SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
         return residualGraph.getMaxFlow();
     }

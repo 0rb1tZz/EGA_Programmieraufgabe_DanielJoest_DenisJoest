@@ -3,6 +3,7 @@ package gui;
 import algo.*;
 import graph.Edge;
 import graph.Graph;
+import test.TestEnvironment;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,9 @@ public class GraphGUI extends JFrame {
     private final JButton stepButton = new JButton("Step");
     private final JToggleButton autoButton = new JToggleButton("Auto Run");
     private final JSlider speedSlider = new JSlider(JSlider.HORIZONTAL, 0, 100, 50);
+
+    private final JButton smallTestButton = new JButton("Small Test");
+    private final JButton bigTestButton = new JButton("Big Test");
 
     private final JLabel statusLabel = new JLabel(" ");
     private final JLabel flowLabel = new JLabel(" ");
@@ -84,6 +88,10 @@ public class GraphGUI extends JFrame {
         menuBar.add(new JLabel("Speed:"));
         speedSlider.setPreferredSize(new Dimension(150, 20));
         menuBar.add(speedSlider);
+        menuBar.add(new JSeparator(SwingConstants.VERTICAL));
+        menuBar.add(new JSeparator(SwingConstants.VERTICAL));
+        menuBar.add(smallTestButton);
+        menuBar.add(bigTestButton);
 
         return menuBar;
     }
@@ -148,6 +156,9 @@ public class GraphGUI extends JFrame {
         autoButton.setSelected(false);
         autoButton.setEnabled(running);
         speedSlider.setEnabled(running);
+
+//        smallTestButton.setEnabled(running);
+//        bigTestButton.setEnabled(running);
     }
 
     private void addListeners() {
@@ -157,6 +168,22 @@ public class GraphGUI extends JFrame {
         stepButton.addActionListener(e -> {algorithm.setTakeStep(true); algorithm.setAutoRun(false);});
         autoButton.addActionListener(e -> {algorithm.setAutoRun(autoButton.isSelected());});
         speedSlider.addChangeListener(e -> {setStepSizeInMillis();});
+        smallTestButton.addActionListener(e -> {runSmallTest();});
+        bigTestButton.addActionListener(e -> {runBigTest();});
+    }
+
+    private void runSmallTest(){
+        TestEnvironment t = new TestEnvironment(10, 20, 20);
+        TestResultGUI smallTestResultGUI = new TestResultGUI();
+        t.setTestResultGUI(smallTestResultGUI);
+        t.runTestEnvironment();
+    }
+
+    private void runBigTest(){
+        TestEnvironment t = new TestEnvironment(10, 2000, 50);
+        TestResultGUI bigTestResultGUI = new TestResultGUI();
+        t.setTestResultGUI(bigTestResultGUI);
+        t.runTestEnvironment();
     }
 
     private void setStepSizeInMillis() {

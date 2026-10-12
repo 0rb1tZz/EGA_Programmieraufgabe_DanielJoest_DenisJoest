@@ -20,7 +20,7 @@ public class GraphGenerationPanel extends JPanel {
     private JTextField nodeCountField;
     private JTextField maxCapacityField;
     private JTextField seedField;
-    private final JButton generateButton = new JButton("Generate Graph");;
+    private final JButton generateButton = new JButton("Generate Graph");
     private final JCheckBox edgeLabelToggle = new JCheckBox("Show Edge Labels", false);
     private final JCheckBox nodeLabelToggle = new JCheckBox("Show Node Labels", false);
 

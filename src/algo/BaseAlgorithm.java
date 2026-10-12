@@ -33,6 +33,8 @@ public abstract class BaseAlgorithm {
     protected GraphGUI graphGUI;
     protected GraphPanel graphPanel;
 
+    protected boolean isTestRun;
+
     public BaseAlgorithm(Graph graph) {
         residualGraph = graph;
         isNodeActive = new boolean[graph.getNodes().size()];
@@ -51,7 +53,7 @@ public abstract class BaseAlgorithm {
         }).start();
     }
 
-    protected int runAlgorithm() throws InterruptedException {
+    public int runAlgorithm() throws InterruptedException {
         while(!noMoreAugmentingPath){
             System.out.println("Iter");
             Thread.sleep(stepSizeInMillis);
@@ -72,7 +74,8 @@ public abstract class BaseAlgorithm {
             }
             for(Node n: residualGraph.getNodes())
                 n.setVisitedInCurrentSearch(false);
-            SwingUtilities.invokeLater(() -> graphPanel.repaint());
+
+            if (!isTestRun) SwingUtilities.invokeLater(() -> graphPanel.repaint());
         }
         return residualGraph.getMaxFlow();
     }
@@ -113,5 +116,9 @@ public abstract class BaseAlgorithm {
 
     public void setGraphPanel(GraphPanel graphPanel) {
         this.graphPanel = graphPanel;
+    }
+
+    public void setIsTestRun(boolean isTestRun) {
+        this.isTestRun = isTestRun;
     }
 }
