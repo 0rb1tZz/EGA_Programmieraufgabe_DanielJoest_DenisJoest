@@ -48,7 +48,7 @@ public class Dinic extends BaseAlgorithm {
                 e.getReverseEdge().addFlow(-bottleneck);
             }
         }
-        graphGUI.setBlockingFlowLabelText(blockingFlow);
+        if (!isTestRun) graphGUI.setBlockingFlowLabelText(blockingFlow);
         return null;
     }
 

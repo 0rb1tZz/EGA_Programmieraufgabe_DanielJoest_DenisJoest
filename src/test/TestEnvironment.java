@@ -48,7 +48,9 @@ public class TestEnvironment {
                     flowResults[j] = algorithm.runAlgorithm();
                     long timePost = System.currentTimeMillis();
                     runtime = timePost - timePre;
-                } catch (Exception _) {}
+                } catch (Exception e) {
+                    System.err.println("Error while running test environment");
+                }
 
                 //test Flusserhaltung:
                 boolean flowPreservation = true;
@@ -86,7 +88,7 @@ public class TestEnvironment {
 //            for (int l: flowResults){ // kaputt
 //                equalFlow = equalFlow && flowResults[l] == flowResults[0];
 //            }
-            for (int l = 1; i < flowResults.length; i++){
+            for (int l = 1; l < flowResults.length; l++){
                 equalFlow = equalFlow && flowResults[l] == flowResults[0];
             }
             testResultGUI.addTestResult("" + equalFlow);
