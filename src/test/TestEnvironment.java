@@ -27,12 +27,25 @@ public class TestEnvironment {
     }
 
     public void runTestEnvironment() {
+        testResultGUI.addTitle("Testing the triple (" + instances + ", " + nodes + ", " + maxCapacity + ")");
         for (int i = 0; i < instances; i++){
+            testResultGUI.addHeadline("Testing instance " + i);
             Graph graph = new GraphBuilder(nodes, maxCapacity, i).buildGraph(10000, 10000);
-            int[] flowResults = new int[4];
-            for (int j = 0; j < 4; j++){
+            int[] flowResults = new int[8];
+            long[] timeResults = new long[4];
+            boolean[] flowPresResults = new boolean[4];
+            boolean[] capCorrectnessResults = new boolean[4];
+            boolean[] satCutResults = new boolean[4];
+            int[] minCutResults = new int[4];
+            for (int j = 0; j < 8; j++){
+                if(j == 4){
+                    graph.adaptForSecondTestRun();
+                }
+//                if(j == 3 || j == 7){
+//                    continue;
+//                }
                 graph.resetGraphBeforeAlgoRun();
-                BaseAlgorithm algorithm = switch (j) {
+                BaseAlgorithm algorithm = switch (j%4) {
                     case 0 -> new EdmondsKarp(graph);
                     case 1 -> new FordFulkerson(graph);
                     case 2 -> new Dinic(graph);
@@ -82,16 +95,68 @@ public class TestEnvironment {
                 }
 
                 //test saturierter Schnitt:
+                boolean saturatedCutCondition = true;
+                LinkedList<Node> nodesConnectedToS = new LinkedList<>();
+                nodesConnectedToS.add(graph.getSourceNode());
+                for(Node n: graph.getNodes()){
+                    n.setVisitedInCurrentSearch(false);
+                }
+                graph.getSourceNode().setVisitedInCurrentSearch(true);
+                for (int k = 0; k < nodesConnectedToS.size(); k++){
+                    Node current = nodesConnectedToS.get(k);
+                    for(Edge e: current.getOutgoingEdges()){
+                        if(e.getTargetNode().isVisitedInCurrentSearch() || e.getRemainingCapacity() == 0)
+                            continue;
+                        nodesConnectedToS.add(e.getTargetNode());
+                        e.getTargetNode().setVisitedInCurrentSearch(true);
+                    }
+                }
+                if(nodesConnectedToS.contains(graph.getTargetNode()))
+                    saturatedCutCondition = false;
+                int minCut = 0;
+                for (Node n: nodesConnectedToS){
+                    for(Edge e: n.getOutgoingEdges()){
+                        if (e.getTargetNode().isVisitedInCurrentSearch())
+                            continue;
+                        minCut += e.getFlow();
+                    }
+                }
+
+                if (j < 4){
+                    timeResults[j] = runtime;
+                    flowPresResults[j] = flowPreservation;
+                    capCorrectnessResults[j] = capacityCondition;
+                    satCutResults[j] = saturatedCutCondition;
+                    minCutResults[j] = minCut;
+                }
             }
             //test equal flow:
             boolean equalFlow = true;
-//            for (int l: flowResults){ // kaputt
-//                equalFlow = equalFlow && flowResults[l] == flowResults[0];
-//            }
-            for (int l = 1; l < flowResults.length; l++){
+
+            for (int l = 1; l < 4; l++){
                 equalFlow = equalFlow && flowResults[l] == flowResults[0];
             }
-            testResultGUI.addTestResult("" + equalFlow);
+            boolean correctlyChangedFlow = true;
+            for (int l = 0; l < 4; l++){
+                correctlyChangedFlow = correctlyChangedFlow && flowResults[l] + 1 == flowResults[l+4];
+            }
+            LinkedList<String> testResults = new LinkedList<>();
+            String flowPres = "Flow preservation is " + Arrays.toString(flowPresResults);
+            testResults.add(flowPres);
+            String capCorrectness = "Capacity correctness is " + Arrays.toString(capCorrectnessResults);
+            testResults.add(capCorrectness);
+            String satCut = "Sat cut results are " + Arrays.toString(satCutResults);
+            testResults.add(satCut);
+            String minCut = "Minimum cut results are " + Arrays.toString(minCutResults);
+            testResults.add(minCut);
+            String runtimes = "Runtimes (ms): " + Arrays.toString(timeResults);
+            testResults.add(runtimes);
+            String flowEquality = "Flow equality is " + equalFlow + " (" + flowResults[0] + ")";
+            testResults.add(flowEquality);
+            String changedFlow = "Changed flow test is " + correctlyChangedFlow;
+            testResults.add(changedFlow);
+
+            testResultGUI.addTestResult(testResults);
         }
     }
 

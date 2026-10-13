@@ -10,6 +10,8 @@ public class Graph {
     private LinkedList<Node> nodes = new LinkedList<Node>();
     private LinkedList<Edge> edges = new LinkedList<Edge>();
 
+    int currentEdgeID = 0;
+    private int[] initialShortestPath;
 
     public void addNode(Node node) {
         nodes.add(node);
@@ -23,6 +25,8 @@ public class Graph {
         Edge reverseEdge = new Edge(edge.getTargetNode(), edge.getSourceNode(), reverseEdgeCapacity);
         edge.setReverseEdge(reverseEdge);
         reverseEdge.setReverseEdge(edge);
+        edge.id = currentEdgeID++;
+        reverseEdge.id = currentEdgeID++;
         edges.add(edge);
         edges.add(reverseEdge);
     }
@@ -59,6 +63,10 @@ public class Graph {
         this.edges = edges;
     }
 
+    public void setInitialShortestPath(int[] initialShortestPath){ this.initialShortestPath = initialShortestPath; }
+
+    public int[] getInitialShortestPath() { return initialShortestPath; }
+
     // to be run after the algo terminated to get the final max flow value
     public int getMaxFlow(){
         int flow = 0;
@@ -74,5 +82,11 @@ public class Graph {
             edge.reset();
         for (Node node : nodes)
             node.reset();
+    }
+
+    public void adaptForSecondTestRun(){
+        for (int i: initialShortestPath){
+            edges.get(i).addCapacity(1);
+        }
     }
 }

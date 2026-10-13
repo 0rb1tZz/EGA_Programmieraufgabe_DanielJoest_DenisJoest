@@ -30,7 +30,16 @@ public class EdmondsKarp extends BaseAlgorithm {
         while (!toLookAt.isEmpty()) {
             Node current = toLookAt.poll();
             if(current == targetNode){
-                return reconstructPath();
+                if (residualGraph.getInitialShortestPath() != null){
+                    return reconstructPath();
+                }
+                LinkedList<Edge> temp = reconstructPath();
+                int[] pathAsIDs = new int[temp.size()];
+                for (int i = 0; i < temp.size(); i++) {
+                    pathAsIDs[i] = temp.get(i).id;
+                }
+                residualGraph.setInitialShortestPath(pathAsIDs);
+                return temp;
             }
             for (Edge e : current.getOutgoingEdges()){
                 if(!e.getTargetNode().isVisitedInCurrentSearch() && e.getRemainingCapacity() > 0){

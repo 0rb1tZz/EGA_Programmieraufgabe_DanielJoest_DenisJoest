@@ -180,7 +180,7 @@ public class GraphGUI extends JFrame {
     }
 
     private void runBigTest(){
-        TestEnvironment t = new TestEnvironment(10, 2000, 50);
+        TestEnvironment t = new TestEnvironment(250, 500, 50);
         TestResultGUI bigTestResultGUI = new TestResultGUI();
         t.setTestResultGUI(bigTestResultGUI);
         t.runTestEnvironment();

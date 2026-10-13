@@ -5,6 +5,7 @@ public class Edge {
     private Node sourceNode;
     private Node targetNode;
     private int capacity;
+    public int id;
 
     private int flow;
 
@@ -64,6 +65,8 @@ public class Edge {
         }
         this.flow += flow;
     } // reverseEdge.addFlow(-flow); an der jeweiligen Stelle des Aufrufs
+
+    public void addCapacity(int capacity){ this.capacity += capacity; }
 
     public int getRemainingCapacity(){
         return capacity - flow;
