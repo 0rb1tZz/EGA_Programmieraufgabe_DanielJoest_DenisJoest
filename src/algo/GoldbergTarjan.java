@@ -117,6 +117,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
                     }
                 currentEdge = v.getNextEdge();
             }
+            currentNodesToHighlight.add(v);
             v.setDepthLevelInCurrentIteration(dMin+1);
             v.resetCurrentEdge();
         }
@@ -126,6 +127,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
 
     private void resetIteration() {
         currentAugmentingPath =  new LinkedList<>();
+        currentNodesToHighlight = new LinkedList<>();
     }
 
     @Override

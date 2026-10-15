@@ -3,6 +3,7 @@ package gui;
 import algo.*;
 import graph.Edge;
 import graph.Graph;
+import graph.Node;
 import test.TestEnvironment;
 
 import javax.swing.*;
@@ -213,6 +214,13 @@ public class GraphGUI extends JFrame {
             return null;
         }
         return algorithm.getCurrentAugmentingPath();
+    }
+
+    public List<Node> getCurrentNodesToHighlight() {
+        if (algorithm == null) {
+            return null;
+        }
+        return algorithm.getCurrentNodesToHighlight();
     }
 
 }

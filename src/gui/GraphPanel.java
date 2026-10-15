@@ -153,7 +153,13 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
             }
         }
 
-
+        if (graphGUI.getCurrentNodesToHighlight() != null){
+            for (Node node : graphGUI.getCurrentNodesToHighlight()) {
+                g2d.setColor(Color.ORANGE);
+                g2d.setStroke(new BasicStroke((float) lineThickness /2));
+                g2d.drawOval(node.getX() - (int) nodeRadius, node.getY() - (int) nodeRadius, 2 * (int) nodeRadius, 2 * (int) nodeRadius);
+            }
+        }
     }
 
     private void drawEdges(Graphics2D g2d, List<Edge> edges, boolean highlightEdges) {

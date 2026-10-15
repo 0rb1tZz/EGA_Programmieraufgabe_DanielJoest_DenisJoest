@@ -22,6 +22,7 @@ public abstract class BaseAlgorithm {
     // protected ResidualGraph residualGraph;
     protected Graph residualGraph;
     protected LinkedList<Edge> currentAugmentingPath = new LinkedList<Edge>();
+    protected LinkedList<Node> currentNodesToHighlight = new LinkedList<Node>();
     protected boolean noMoreAugmentingPath = false;
 
     protected List<Node> activeNodes = new LinkedList<Node>();
@@ -112,6 +113,10 @@ public abstract class BaseAlgorithm {
 
     public List<Edge> getCurrentAugmentingPath() {
         return currentAugmentingPath;
+    }
+
+    public List<Node> getCurrentNodesToHighlight() {
+        return currentNodesToHighlight;
     }
 
     public void setGraphGUI(GraphGUI graphGUI) {
