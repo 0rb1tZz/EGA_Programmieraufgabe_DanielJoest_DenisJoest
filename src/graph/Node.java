@@ -15,7 +15,9 @@ public class Node {
     private Edge cameFromInCurrentSearch;
 
     private final List<Edge> outgoingEdges = new LinkedList<Edge>();
-    private Iterator<Edge> currentEdge = outgoingEdges.listIterator();
+    private Iterator<Edge> currentEdgeIterator = outgoingEdges.listIterator();
+    private Edge currentEdge;
+    private boolean returnPrevious;
 
     private int excess = 0; // aka e_f(v)
 
@@ -90,16 +92,24 @@ public class Node {
         return cameFromInCurrentSearch;
     }
 
-    public Edge getCurrentEdge(){
-        try {
-            return currentEdge.next();
-        } catch (NoSuchElementException e) {
-            return null;
+    public Edge getNextEdge() {
+        if(returnPrevious){
+            returnPrevious = false;
+            return currentEdge;
         }
+        if(currentEdgeIterator.hasNext()){
+            currentEdge = currentEdgeIterator.next();
+            return currentEdge;
+        }
+        return null;
+    }
+
+    public void stayOnCurrentEdge() {
+        returnPrevious = true;
     }
 
     public void resetCurrentEdge(){
-        currentEdge = outgoingEdges.listIterator(); // reset the iterator
+        currentEdgeIterator = outgoingEdges.listIterator(); // reset the iterator
     }
 
     public int getExcess() {

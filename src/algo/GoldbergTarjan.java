@@ -6,7 +6,6 @@ import graph.Node;
 
 import javax.swing.*;
 import java.util.LinkedList;
-import java.util.List;
 
 public class GoldbergTarjan extends BaseAlgorithm{
 
@@ -26,6 +25,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
             if(firstStep){
                 goldbergTarjanInductionBasis();
                 firstStep = false;
+                if (!isTestRun) SwingUtilities.invokeLater(() -> graphPanel.repaint());
                 continue;
             }
             if (activeNodes.isEmpty())
@@ -79,10 +79,10 @@ public class GoldbergTarjan extends BaseAlgorithm{
 
     private void goldbergTarjanInductionStep() {
         Node v = activeNodes.getFirst();
-        Edge currentEdge = v.getCurrentEdge();
+        Edge currentEdge = v.getNextEdge();
         int dMin = Integer.MAX_VALUE;
         while (currentEdge != null && !(currentEdge.getTargetNode().getDepthLevelInCurrentIteration() == v.getDepthLevelInCurrentIteration() - 1 && currentEdge.getRemainingCapacity() > 0)) {
-            currentEdge = v.getCurrentEdge();
+            currentEdge = v.getNextEdge();
         }
 
         if(currentEdge != null){
@@ -93,8 +93,12 @@ public class GoldbergTarjan extends BaseAlgorithm{
                 isNodeActive[w.getId()] = true;
             }
             int pushFlow = Math.min(currentEdge.getRemainingCapacity(), v.getExcess());
+            currentAugmentingPath.add(currentEdge);
             currentEdge.addFlow(pushFlow);
             currentEdge.getReverseEdge().addFlow(-pushFlow);
+            if(currentEdge.getRemainingCapacity() > 0)
+                v.stayOnCurrentEdge();
+
             w.setExcess(w.getExcess() + pushFlow);
             v.setExcess(v.getExcess() - pushFlow);
             if(v.getExcess() == 0){
@@ -103,12 +107,12 @@ public class GoldbergTarjan extends BaseAlgorithm{
             }
         } else {
             v.resetCurrentEdge();
-            currentEdge = v.getCurrentEdge();
+            currentEdge = v.getNextEdge();
             while (currentEdge != null) {
                 if (currentEdge.getRemainingCapacity() > 0) {
                     dMin = Math.min(dMin, currentEdge.getTargetNode().getDepthLevelInCurrentIteration());
                     }
-                currentEdge = v.getCurrentEdge();
+                currentEdge = v.getNextEdge();
             }
             v.setDepthLevelInCurrentIteration(dMin+1);
             v.resetCurrentEdge();
@@ -118,7 +122,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
     }
 
     private void resetIteration() {
-
+        currentAugmentingPath =  new LinkedList<>();
     }
 
     @Override

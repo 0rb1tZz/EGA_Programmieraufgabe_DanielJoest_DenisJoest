@@ -66,7 +66,7 @@ public class Dinic extends BaseAlgorithm {
             Node currentNode = nodePath.getLast();
             boolean hasOnlyVisitedChildren = true;
             for (Edge edge : currentNode.getOutgoingEdges()) {
-                if(!edge.getTargetNode().isVisitedInCurrentSearch() && edge.getRemainingCapacity() > 0 && edge.getSourceNode().getDepthLevelInCurrentIteration() < edge.getTargetNode().getDepthLevelInCurrentIteration() && !targetNode.isDestroyedForCurrentIteration()){
+                if(!edge.getTargetNode().isVisitedInCurrentSearch() && edge.getRemainingCapacity() > 0 && edge.getSourceNode().getDepthLevelInCurrentIteration() < edge.getTargetNode().getDepthLevelInCurrentIteration() && !edge.getTargetNode().isDestroyedForCurrentIteration()){
                     nodePath.add(edge.getTargetNode());
                     edge.getTargetNode().setVisitedInCurrentSearch(true);
                     edgePath.add(edge);
@@ -131,6 +131,8 @@ public class Dinic extends BaseAlgorithm {
     }
 
     private void labelNodesOnShortestPaths(Node n){
+        if (n.isVisitedInCurrentSearch())
+                return;
         n.setVisitedInCurrentSearch(true);
         for (Edge e : n.getOutgoingEdges()){
             if(e.getTargetNode().getDepthLevelInCurrentIteration()+1 == n.getDepthLevelInCurrentIteration()){
