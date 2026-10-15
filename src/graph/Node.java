@@ -109,6 +109,8 @@ public class Node {
     }
 
     public void resetCurrentEdge(){
+        currentEdge = null;
+        returnPrevious = false;
         currentEdgeIterator = outgoingEdges.listIterator(); // reset the iterator
     }
 

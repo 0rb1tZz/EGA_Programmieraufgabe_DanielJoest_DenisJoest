@@ -18,7 +18,10 @@ public class Dinic extends BaseAlgorithm {
     public int runAlgorithm() throws InterruptedException {
         boolean keepRunning = true;
         while (keepRunning) {
-            Thread.sleep(stepSizeInMillis);
+            if (stepSizeInMillis == 0) {
+
+            }else
+                Thread.sleep(stepSizeInMillis);
             while(!takeStep && !autoRun){
                 Thread.sleep(stepSizeInMillis);
             }
@@ -97,7 +100,7 @@ public class Dinic extends BaseAlgorithm {
             node.setDestroyedForCurrentIteration(false);
             node.setDepthLevelInCurrentIteration(-1);
         }
-        currentAugmentingPath = new LinkedList<Edge>();
+        if(!isTestRun) currentAugmentingPath = new LinkedList<Edge>();
     }
 
     /**
@@ -137,7 +140,7 @@ public class Dinic extends BaseAlgorithm {
         for (Edge e : n.getOutgoingEdges()){
             if(e.getTargetNode().getDepthLevelInCurrentIteration()+1 == n.getDepthLevelInCurrentIteration()){
                 labelNodesOnShortestPaths(e.getTargetNode());
-                currentAugmentingPath.add(e.getReverseEdge());
+                if(!isTestRun) currentAugmentingPath.add(e.getReverseEdge());
             }
         }
     }

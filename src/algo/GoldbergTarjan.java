@@ -17,7 +17,10 @@ public class GoldbergTarjan extends BaseAlgorithm{
     public int runAlgorithm() throws InterruptedException {
         boolean keepRunning = true;
         while (keepRunning) {
-            Thread.sleep(stepSizeInMillis);
+            if (stepSizeInMillis == 0) {
+
+            }else
+                Thread.sleep(stepSizeInMillis);
             while(!takeStep && !autoRun){
                 Thread.sleep(stepSizeInMillis);
             }
@@ -93,7 +96,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
                 isNodeActive[w.getId()] = true;
             }
             int pushFlow = Math.min(currentEdge.getRemainingCapacity(), v.getExcess());
-            currentAugmentingPath.add(currentEdge);
+            if(!isTestRun) currentAugmentingPath.add(currentEdge);
             currentEdge.addFlow(pushFlow);
             currentEdge.getReverseEdge().addFlow(-pushFlow);
             if(currentEdge.getRemainingCapacity() > 0)

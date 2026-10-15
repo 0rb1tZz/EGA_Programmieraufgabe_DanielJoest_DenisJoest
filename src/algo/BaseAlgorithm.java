@@ -56,7 +56,11 @@ public abstract class BaseAlgorithm {
     public int runAlgorithm() throws InterruptedException {
         while(!noMoreAugmentingPath){
             //System.out.println("Iter");
-            Thread.sleep(stepSizeInMillis);
+            if (stepSizeInMillis == 0) {
+
+            }else
+                Thread.sleep(stepSizeInMillis);
+
             while(!takeStep && !autoRun){
                 Thread.sleep(stepSizeInMillis);
             }

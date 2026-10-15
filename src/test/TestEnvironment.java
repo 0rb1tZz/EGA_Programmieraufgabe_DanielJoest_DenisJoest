@@ -46,8 +46,8 @@ public class TestEnvironment {
 //                }
                 graph.resetGraphBeforeAlgoRun();
                 BaseAlgorithm algorithm = switch (j%4) {
-                    case 0 -> new EdmondsKarp(graph);
-                    case 1 -> new FordFulkerson(graph);
+                    case 0 -> new FordFulkerson(graph);
+                    case 1 -> new EdmondsKarp(graph);
                     case 2 -> new Dinic(graph);
                     default -> new GoldbergTarjan(graph);
                 };
