@@ -123,7 +123,7 @@ public class GraphGUI extends JFrame {
         algorithm.setGraphGUI(this);
         algorithm.setGraphPanel(graphPanel);
         setStepSizeInMillis();
-        algorithm.startAlgorithm();
+        algorithm.startAlgorithmFromGUI();
 //        try {
 //        } catch (InterruptedException e) {
 //            throw new RuntimeException(e);
