@@ -48,6 +48,66 @@ public class Dinic extends BaseAlgorithm {
 
 
     /**
+     * Applies depth level labels for all the nodes as their distance to the source node.
+     * @return true, if all Nodes up to the depth of the target node got labeled and false, if the target node could not be found
+     */
+    private boolean applyDepthLabels() {
+        Queue<Node> toLookAt = new LinkedList<>();
+        Node sourceNode = residualGraph.getSourceNode();
+        Node targetNode = residualGraph.getTargetNode();
+
+        toLookAt.add(sourceNode);
+        sourceNode.setDepthLevelInCurrentIteration(0);
+        // labels all nodes up to the depth of the target node
+        while (!toLookAt.isEmpty()) {
+            Node current = toLookAt.poll();
+            if(current.getDepthLevelInCurrentIteration() == targetNode.getDepthLevelInCurrentIteration()){ // removes
+                labelNodesOnShortestPaths(targetNode); // labels all nodes that a part of a minimal path
+                cleanDepthLabels(); // remove depth levels of nodes, that are not part of the subgraph
+                return true;
+            }
+            for (Edge e : current.getOutgoingEdges()){      // apply depth level labels to all nodes with depth <= target
+                if(e.getTargetNode().getDepthLevelInCurrentIteration() < 0 && e.getRemainingCapacity() > 0){
+                    Node target = e.getTargetNode();
+                    toLookAt.add(target);
+                    target.setDepthLevelInCurrentIteration(e.getSourceNode().getDepthLevelInCurrentIteration()+1);
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Defines which nodes are part of the current subgraph by setting their visitedInCurrentSearch field to true.
+     * @param n The starting node for the recursion.
+     */
+    private void labelNodesOnShortestPaths(Node n) {
+        if (n.isVisitedInCurrentSearch())
+            return;
+        n.setVisitedInCurrentSearch(true);
+        for (Edge e : n.getOutgoingEdges()){
+            if(e.getTargetNode().getDepthLevelInCurrentIteration()+1 == n.getDepthLevelInCurrentIteration()){
+                labelNodesOnShortestPaths(e.getTargetNode());
+                if(!isTestRun) currentAugmentingPath.add(e.getReverseEdge()); // Adds the edge solely for visualisation in the GUI
+            }
+        }
+    }
+
+    /**
+     * Sets the depth level labels of all the nodes not belonging to the subgraph to -1 and makes sure that the nodes in the subgraph are set to not visited
+     */
+    private void cleanDepthLabels() {
+        for (Node n : residualGraph.getNodes())
+            if(!n.isVisitedInCurrentSearch())
+                n.setDepthLevelInCurrentIteration(-1);
+            else
+                n.setVisitedInCurrentSearch(false);
+    }
+
+
+    /**
      * Implements the blocking flow by Dinic algorithm.
      */
     private void dinicBlockingFlow() {
@@ -137,65 +197,6 @@ public class Dinic extends BaseAlgorithm {
         if(!isTestRun) currentAugmentingPath = new LinkedList<Edge>();
     }
 
-
-    /**
-     * Applies depth level labels for all the nodes as their distance to the source node.
-     * @return true, if all Nodes up to the depth of the target node got labeled and false, if the target node could not be found
-     */
-    private boolean applyDepthLabels() {
-        Queue<Node> toLookAt = new LinkedList<>();
-        Node sourceNode = residualGraph.getSourceNode();
-        Node targetNode = residualGraph.getTargetNode();
-
-        toLookAt.add(sourceNode);
-        sourceNode.setDepthLevelInCurrentIteration(0);
-        // labels all nodes up to the depth of the target node
-        while (!toLookAt.isEmpty()) {
-            Node current = toLookAt.poll();
-            if(current.getDepthLevelInCurrentIteration() == targetNode.getDepthLevelInCurrentIteration()){ // removes
-                labelNodesOnShortestPaths(targetNode); // labels all nodes that a part of a minimal path
-                cleanDepthLabels(); // remove depth levels of nodes, that are not part of the subgraph
-                return true;
-            }
-            for (Edge e : current.getOutgoingEdges()){      // apply depth level labels to all nodes with depth <= target
-                if(e.getTargetNode().getDepthLevelInCurrentIteration() < 0 && e.getRemainingCapacity() > 0){
-                    Node target = e.getTargetNode();
-                    toLookAt.add(target);
-                    target.setDepthLevelInCurrentIteration(e.getSourceNode().getDepthLevelInCurrentIteration()+1);
-                }
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Defines which nodes are part of the current subgraph by setting their visitedInCurrentSearch field to true.
-     * @param n The starting node for the recursion.
-     */
-    private void labelNodesOnShortestPaths(Node n) {
-        if (n.isVisitedInCurrentSearch())
-                return;
-        n.setVisitedInCurrentSearch(true);
-        for (Edge e : n.getOutgoingEdges()){
-            if(e.getTargetNode().getDepthLevelInCurrentIteration()+1 == n.getDepthLevelInCurrentIteration()){
-                labelNodesOnShortestPaths(e.getTargetNode());
-                if(!isTestRun) currentAugmentingPath.add(e.getReverseEdge()); // Adds the edge solely for visualisation in the GUI
-            }
-        }
-    }
-
-    /**
-     * Sets the depth level labels of all the nodes not belonging to the subgraph to -1 and makes sure that the nodes in the subgraph are set to not visited
-     */
-    private void cleanDepthLabels() {
-        for (Node n : residualGraph.getNodes())
-            if(!n.isVisitedInCurrentSearch())
-                n.setDepthLevelInCurrentIteration(-1);
-            else
-                n.setVisitedInCurrentSearch(false);
-    }
 
     @Override
     public LinkedList<Edge> getPathToSink() {

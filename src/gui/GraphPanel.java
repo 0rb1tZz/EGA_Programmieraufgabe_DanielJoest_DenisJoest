@@ -142,7 +142,7 @@ public class GraphPanel extends JPanel implements MouseWheelListener, MouseListe
 
             if (showNodeLabels) {
                 // Draw node id centered
-                g2d.setColor(Color.WHITE);
+                g2d.setColor(Color.DARK_GRAY);
                 g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
                 FontMetrics fm = g2d.getFontMetrics();
                 //int textX = node.getX() - (fm.stringWidth(String.valueOf(node.getId())) / 2);

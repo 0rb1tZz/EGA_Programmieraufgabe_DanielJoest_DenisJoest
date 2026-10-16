@@ -140,7 +140,7 @@ public class GoldbergTarjan extends BaseAlgorithm{
             // calc how much flow can be pushed over the looked at edge
             // 2. Increase the flow over (v,w) by the minimum of e_f(v) and the residual capacity of (v,w).
             int pushFlow = Math.min(currentEdge.getRemainingCapacity(), v.getExcess());
-            if(!isTestRun) currentAugmentingPath.add(currentEdge);      // only used for visualisation in the GUI
+            if(!isTestRun) currentAugmentingPath.add(currentEdge);      // only used for visualization in the GUI
             currentEdge.addFlow(pushFlow);
             currentEdge.getReverseEdge().addFlow(-pushFlow);
             if(currentEdge.getRemainingCapacity() > 0)

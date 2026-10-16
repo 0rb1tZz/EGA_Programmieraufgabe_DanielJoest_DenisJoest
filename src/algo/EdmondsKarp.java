@@ -35,7 +35,7 @@ public class EdmondsKarp extends BaseAlgorithm {
 
             // reconstruct a path from source to target if target node is found
             if(current == targetNode){
-                if (!isTestRun)     // teh default case
+                if (!isTestRun)     // the default case
                     return reconstructPath();
                 else {              // once sets the shortest path, that is used in test runs to alternate the graph for a different flow value
                     if (residualGraph.getInitialShortestPath() != null){
@@ -72,7 +72,7 @@ public class EdmondsKarp extends BaseAlgorithm {
      * A method used to reconstruct the path from target to source, based on the parameters set in the graph after running BFS.
      * @return a path from source to target.
      */
-    private LinkedList<Edge> reconstructPath(){
+    private LinkedList<Edge> reconstructPath() {
         LinkedList<Edge> path = new LinkedList<>();
         Node source = residualGraph.getSourceNode();
         Node current = residualGraph.getTargetNode(); // start at the target node
@@ -80,7 +80,7 @@ public class EdmondsKarp extends BaseAlgorithm {
         // traverse backwards until the source node is reached
         // in each iteration: add the node from which the algo reached the current node to the beginning of the list
         // make it the new current node
-        while (source != current){
+        while (source != current) {
             path.addFirst(current.getCameFromInCurrentSearch());
             current = current.getCameFromInCurrentSearch().getSourceNode();
         }
